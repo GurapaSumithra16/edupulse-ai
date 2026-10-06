@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduPulse AI | Student Learning Portal</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Font: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Chart.js & Canvas Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Separate Modular Stylesheets -->
+<link href="css/common.css" rel="stylesheet"/>
+<link href="css/student.css" rel="stylesheet"/>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col transition-colors duration-200">
+<!-- Sticky Top Header -->
+<header class="sticky top-0 z-40 bg-white/95 border-b border-slate-200 backdrop-blur shadow-sm">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+<!-- Brand Logo -->
+<a class="flex items-center gap-3" href="index.html">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-extrabold text-xl tracking-tight text-slate-900">EduPulse<span class="text-brand-600">AI</span></span>
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">Student Portal</span>
+</div>
+<p class="text-xs text-slate-500 hidden sm:block">Personalized Learning &amp; Academic Remediations</p>
+</div>
+</a>
+<!-- Center Action: Global Search Trigger -->
+<div class="flex-1 max-w-md hidden md:block">
+<div class="relative cursor-pointer" onclick="switchMainTab('smart-search')">
+<svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 rounded-xl text-xs text-slate-600 cursor-pointer focus:outline-none transition" placeholder="Ask AI anything or search materials, quizzes, concepts..." readonly="" type="text"/>
+<kbd class="absolute right-3 top-2.5 px-1.5 py-0.5 text-[10px] font-mono bg-white rounded border border-slate-200 text-slate-400">Ctrl+K</kbd>
+</div>
+</div>
+<!-- Right Controls: Role Links & User Profile -->
+<div class="flex items-center gap-3">
+<!-- Architecture Viewer Modal Button -->
+<button class="p-2 text-slate-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl border border-slate-200 transition" onclick="toggleModal('modal-db-architecture')" title="View DB Schema &amp; System Architecture">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M9 4v16M4 11h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Current User Avatar Profile -->
+<div class="flex items-center gap-2 pl-2 border-l border-slate-200">
+<div class="w-8 h-8 rounded-full bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shadow-sm" id="currentUserAvatar">
+            ST
+          </div>
+<div class="hidden lg:block text-left">
+<div class="text-xs font-bold text-slate-800 leading-tight" id="currentUserName">Student</div>
+<div class="text-[10px] text-emerald-600 font-medium" id="currentUserRoleBadge">Student</div>
+</div>
+</div>
+<!-- Log Out Button -->
+<button class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 transition" onclick="handleLogout('student')" title="Log Out">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+</header>
+<!-- Body Content -->
+<div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+<!-- Left Navigation Sidebar -->
+<aside class="w-full md:w-64 flex-shrink-0">
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3 sticky top-24 space-y-1">
+<div class="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          Student Modules
+        </div>
+<div class="space-y-1">
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-brand-600 bg-brand-50 transition" data-tab="student-diary" onclick="switchMainTab('student-diary')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>My Student Diary</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="analytics-view" onclick="switchMainTab('analytics-view')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Personal Analytics</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="interactive-quiz" onclick="switchMainTab('interactive-quiz')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="flex-1 text-left">Adaptive Quizzes</span>
+<span class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-amber-100 text-amber-700">Adaptive</span>
+</button>
+</div>
+<div class="pt-3 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          AI &amp; Search Tools
+        </div>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="ai-tutor" onclick="switchMainTab('ai-tutor')">
+<svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="flex-1 text-left">AI Academic Tutor</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500 badge-pulse"></span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="smart-search" onclick="switchMainTab('smart-search')">
+<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Smart AI Search</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="feedback-module" onclick="switchMainTab('feedback-module')">
+<svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Feedback &amp; Insights</span>
+</button>
+<div class="pt-4 border-t border-slate-100">
+<div class="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Switch Portal</div>
+<div class="flex gap-1.5 px-2 pt-1">
+<a class="flex-1 text-center py-1.5 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg text-[11px] font-semibold text-slate-600 transition" href="teacher.html">Teacher</a>
+<a class="flex-1 text-center py-1.5 bg-slate-50 hover:bg-purple-50 hover:text-purple-600 rounded-lg text-[11px] font-semibold text-slate-600 transition" href="admin.html">Admin</a>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main View Section -->
+<main class="flex-1 min-w-0">
+<!-- ========================================================================= -->
+<!-- TAB 1: STUDENT DIARY & LEARNING TRACKER -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6" id="view-student-diary">
+<!-- Welcome Hero & Personal Stats -->
+<div class="student-hero-banner rounded-3xl p-6 text-white shadow-xl shadow-brand-700/10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
+<div class="student-hero-glow"></div>
+<div class="relative z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-xs font-medium backdrop-blur mb-3">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Daily Learning Streak: <strong class="text-white"><span id="studentStreakCount">0 Days</span> <span class="streak-fire">🔥</span></strong>
+</div>
+<h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Welcome to your Student Learning Workspace!</h1>
+
+</div>
+<div class="relative z-10 flex gap-3 flex-wrap">
+<button class="px-4 py-2.5 rounded-xl bg-white text-brand-700 text-xs font-bold hover:bg-indigo-50 shadow-md transition flex items-center gap-2" onclick="triggerAiPersonalizedPlan()">
+<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              Generate AI Study Plan
+            </button>
+<button class="px-4 py-2.5 rounded-xl bg-indigo-900/50 hover:bg-indigo-900/70 text-white border border-white/20 text-xs font-bold transition" onclick="openCustomQuizModal()">
+              Practice Test
+            </button>
+</div>
+</div>
+<!-- 4 Key Performance Metric Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Overall Mastery</span>
+<span class="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">Diagnostic</span>
+</div>
+<div class="text-2xl font-black text-slate-800" id="studentMasteryVal">--</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
+<div id="studentMasteryBar" class="bg-brand-600 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+</div>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Quizzes Solved</span>
+<span class="text-brand-600 font-bold bg-brand-50 px-1.5 py-0.5 rounded text-[10px]">Total</span>
+</div>
+<div class="text-2xl font-black text-slate-800" id="studentTotalQuizzes">0</div>
+<p class="text-[11px] text-slate-500 mt-2">Personal records</p>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Attendance Rate</span>
+<span class="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">Status</span>
+</div>
+<div class="text-2xl font-black text-slate-800">100%</div>
+<p class="text-[11px] text-slate-500 mt-2">Active enrolment</p>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Identified Gaps</span>
+<span class="text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded text-[10px]">Actionable</span>
+</div>
+<div class="text-2xl font-black text-amber-600" id="studentGapsCount">0 Topics</div>
+<p class="text-[11px] text-slate-500 mt-2">Based on test accuracy</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left 2 Cols: Daily Learning Diary & Tasks -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Daily Learning Diary Entry Card -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+<span>📓 Daily Learning Diary</span>
+</h2>
+
+</div>
+<button class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-sm transition" onclick="saveStudentDiaryEntry()">
+                  Save Diary Entry
+                </button>
+</div>
+<div class="space-y-3">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Subject</label>
+<select class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none" id="diarySubject">
+<option value="Physics">Physics</option>
+<option value="Mathematics">Mathematics</option>
+<option value="Chemistry">Chemistry</option>
+<option value="Computer Science">Computer Science</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Time Spent (Mins)</label>
+<input class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none" id="diaryMinutes" placeholder="45" type="number"/>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Topic / Lesson</label>
+<input class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none" id="diaryTopic" placeholder="Enter topic or lesson studied..." type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Study Summary &amp; Key Concepts Grasped</label>
+<textarea class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none" id="diaryNotes" placeholder="Summarize the core concepts learned, equations derived, or problems solved..." rows="3"></textarea>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+<span class="text-slate-500">Need AI validation on your notes?</span>
+<button class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1" onclick="aiEvaluateNotes()">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                    Analyze Notes with AI
+                  </button>
+</div>
+</div>
+</div>
+<!-- Learning History Feed -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-800">Recent Diary Logs &amp; Teacher Feedback</h3>
+<span class="text-xs text-slate-400">Synced to Local Database</span>
+</div>
+<div class="space-y-3" id="studentDiaryHistoryList">
+<!-- Populated dynamically -->
+</div>
+</div>
+</div>
+<!-- Right Col: AI Personalized Recommendations & Remediation -->
+<div class="space-y-6">
+<!-- AI Recommendation Card -->
+<div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-5 shadow-lg relative">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-500/30 text-indigo-200 border border-brand-400/30 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> AI Remediation Engine
+                </span>
+<button class="text-slate-400 hover:text-white transition" onclick="refreshRecommendations()" title="Refresh">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<h3 class="text-base font-bold text-white mb-2">Personalized Learning Pathways</h3>
+
+<div class="space-y-2.5">
+<div class="p-3 bg-white/10 rounded-xl border border-white/10 flex items-start gap-3 hover:bg-white/15 transition cursor-pointer" onclick="openCustomQuizModal()">
+<div class="w-6 h-6 rounded-lg bg-indigo-500/40 text-indigo-200 flex items-center justify-center font-bold text-xs">1</div>
+<div>
+<h4 class="text-xs font-semibold text-white">Take a Diagnostic Practice Test</h4>
+
+</div>
+</div>
+<div class="p-3 bg-white/10 rounded-xl border border-white/10 flex items-start gap-3 hover:bg-white/15 transition cursor-pointer" onclick="switchMainTab('ai-tutor')">
+<div class="w-6 h-6 rounded-lg bg-purple-500/40 text-purple-200 flex items-center justify-center font-bold text-xs">2</div>
+<div>
+<h4 class="text-xs font-semibold text-white">Ask the AI Academic Tutor</h4>
+
+</div>
+</div>
+</div>
+</div>
+<!-- Deadlines & Learning Goals -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center justify-between">
+<span>🎯 Learning Goals</span>
+<button class="text-brand-600 text-xs font-semibold hover:underline" onclick="addGoalModal()">+ Add Goal</button>
+</h3>
+<div class="space-y-3" id="studentGoalsContainer">
+<div class="p-6 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
+                  No learning goals set yet. Click "+ Add Goal" to set a study target.
+                </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 2: PERSONALIZED LEARNING ANALYTICS -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-analytics-view">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Personalized Learning Analytics</h2>
+
+</div>
+<div class="flex items-center gap-2">
+<select class="text-xs bg-white border border-slate-200 rounded-xl px-3 py-2 font-medium" id="analyticsTimeFilter" onchange="updateAnalyticsVisuals()">
+<option value="last30">Last 30 Days</option>
+<option value="last90">Current Semester</option>
+<option value="all">Entire Academic Year</option>
+</select>
+<button class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" onclick="exportAnalyticsReport()">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              Export Report
+            </button>
+</div>
+</div>
+<!-- Analytics Charts Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-800">Subject-Wise Mastery vs Class Average</h3>
+<span class="text-[11px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">Normalized 100%</span>
+</div>
+<div class="chart-container-student">
+<canvas id="subjectMasteryChart"></canvas>
+</div>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-800">Cognitive Competency Radar</h3>
+<span class="text-[11px] font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">Bloom's Taxonomy</span>
+</div>
+<div class="chart-container-student">
+<canvas id="competencyRadarChart"></canvas>
+</div>
+</div>
+</div>
+<!-- Topic Breakdown Diagnostic Matrix -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-sm font-bold text-slate-800">Topic-Level Diagnostic Matrix</h3>
+
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
+<tr>
+<th class="p-3">Topic Name</th>
+<th class="p-3">Subject</th>
+<th class="p-3">Attempts</th>
+<th class="p-3">Accuracy</th>
+<th class="p-3">Status</th>
+<th class="p-3 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-slate-700" id="topicDiagnosticTableBody">
+<!-- Populated by JavaScript -->
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 3: ADAPTIVE QUIZ MODULE -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-interactive-quiz">
+<!-- Selection Screen -->
+<div class="space-y-6" id="quizSelectionScreen">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Adaptive Interactive Quizzes</h2>
+
+</div>
+<button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" onclick="openCustomQuizModal()">
+              + Custom Practice Test
+            </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="availableQuizzesGrid">
+<!-- Dynamically populated quiz cards -->
+</div>
+</div>
+<!-- Active Quiz Play Screen -->
+<div class="hidden space-y-6" id="quizActiveScreen">
+<div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+<div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+<div>
+<span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 bg-brand-50 text-brand-700 rounded-lg" id="quizBadgeCategory">Category</span>
+<h3 class="text-lg font-black text-slate-900 mt-1" id="quizTitleDisplay">Quiz Title</h3>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-mono font-bold text-sm">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span id="quizTimerText">00:00</span>
+</div>
+<button class="text-xs text-slate-400 hover:text-rose-600 transition" onclick="abandonQuiz()">Quit</button>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+<span id="quizQuestionNumberIndicator">Question 1 of 1</span>
+<span class="font-bold text-amber-600" id="quizQuestionDifficultyIndicator">Standard</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2 mb-6 overflow-hidden">
+<div class="bg-brand-600 h-2 rounded-full transition-all duration-300" id="quizProgressBar" style="width: 20%"></div>
+</div>
+<div class="mb-6">
+<h4 class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed" id="quizQuestionText">
+                Loading question text...
+              </h4>
+</div>
+<div class="space-y-3 mb-6" id="quizOptionsContainer"></div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<button class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition" id="quizPrevBtn" onclick="quizNavPrev()">
+                Previous
+              </button>
+<button class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" id="quizNextBtn" onclick="quizNavNext()">
+                Next Question
+              </button>
+</div>
+</div>
+</div>
+<!-- Quiz Result Screen -->
+<div class="hidden space-y-6" id="quizResultScreen">
+<div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm text-center max-w-2xl mx-auto">
+<div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<h3 class="text-2xl font-black text-slate-900">Quiz Completed!</h3>
+
+<div class="grid grid-cols-3 gap-4 my-6">
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+<div class="text-2xl font-extrabold text-brand-600" id="resultScoreValue">0 / 0</div>
+<div class="text-[11px] text-slate-500 uppercase font-bold mt-1">Score</div>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+<div class="text-2xl font-extrabold text-emerald-600" id="resultAccuracyValue">0%</div>
+<div class="text-[11px] text-slate-500 uppercase font-bold mt-1">Accuracy</div>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+<div class="text-2xl font-extrabold text-purple-600" id="resultTimeSpentValue">00:00</div>
+<div class="text-[11px] text-slate-500 uppercase font-bold mt-1">Time Taken</div>
+</div>
+</div>
+<div class="p-4 bg-brand-50 border border-brand-100 rounded-2xl text-left text-xs mb-6">
+<div class="flex items-center gap-2 font-bold text-brand-900 mb-1">
+<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                AI Diagnostic Summary
+              </div>
+<p class="text-brand-800 leading-relaxed" id="resultAiFeedbackText">
+                Diagnostic summary will appear here.
+              </p>
+</div>
+<div class="flex justify-center gap-3">
+<button class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-semibold transition" onclick="reviewQuizDetailedAnswers()">
+                Review Detailed Answers &amp; Explanations
+              </button>
+<button class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition" onclick="returnToQuizzes()">
+                Return to Quizzes
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 4: AI ACADEMIC TUTOR CHATBOT MODULE -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-ai-tutor">
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[75vh]">
+<div class="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-purple-500 flex items-center justify-center text-white font-bold shadow">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-white">EduPulse AI Academic Tutor</h3>
+<span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-400/30">Online</span>
+</div>
+<p class="text-[11px] text-slate-400">Step-by-step reasoning, formula derivation, Socratic guidance &amp; revisions</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 text-xs text-slate-400 hover:text-white border border-slate-700 rounded-lg transition" onclick="clearChatHistory()">
+                Clear Chat
+              </button>
+</div>
+</div>
+<div class="p-2.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2 overflow-x-auto text-xs">
+<span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider pl-1">Prompts:</span>
+<button class="px-2.5 py-1 bg-white hover:bg-indigo-50 hover:text-brand-700 text-slate-600 rounded-lg border border-slate-200 whitespace-nowrap transition" onclick="sendQuickPrompt('Explain Newton Third Law with practical engineering examples')">
+              ⚡ Newton's Laws
+            </button>
+<button class="px-2.5 py-1 bg-white hover:bg-indigo-50 hover:text-brand-700 text-slate-600 rounded-lg border border-slate-200 whitespace-nowrap transition" onclick="sendQuickPrompt('Derive integration by parts formula step-by-step')">
+              📐 Integration by Parts
+            </button>
+</div>
+<div class="flex items-center justify-between px-4 py-2 bg-indigo-50 border-b border-indigo-100">
+  <span class="text-[10px] text-indigo-700 font-medium">AI tutor uses your diary context for personalized answers.</span>
+  <button type="button" onclick="configureGeminiKey()" class="text-[10px] font-bold text-indigo-700 hover:text-indigo-900">Connect Gemini</button>
+</div>
+<div class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/50" id="aiChatConversationStream">
+<div class="flex items-start gap-3 max-w-2xl">
+<div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                AI
+              </div>
+<div class="bg-white p-4 rounded-2xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 leading-relaxed space-y-2">
+<p class="font-semibold text-slate-900">Hello! I am your AI Educational Assistant.</p>
+<p>
+                  I'm here to explain complex concepts, solve problems step-by-step, generate personalized practice tests, and help you master your curriculum topics.
+                </p>
+</div>
+</div>
+</div>
+<div class="p-3 bg-white border-t border-slate-200">
+<form class="flex gap-2" id="aiChatForm" onsubmit="handleSendAiMessage(event)">
+<input autocomplete="off" class="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none transition" id="aiChatInput" placeholder="Ask a question, paste an equation, or request practice problems..." type="text"/>
+<button class="px-5 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-2" id="aiChatSendBtn" type="submit">
+<span>Send</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</form>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 5: SMART AI SEARCH MODULE -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-smart-search">
+<div class="max-w-3xl mx-auto space-y-4">
+<div class="text-center space-y-2">
+<h2 class="text-2xl font-black text-slate-900">Intelligent Academic Search</h2>
+
+</div>
+<div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+<form class="flex gap-2" onsubmit="executeSmartSearch(event)">
+<div class="relative flex-1">
+<svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<input class="w-full pl-10 pr-4 py-2.5 bg-slate-50 rounded-xl text-xs border border-slate-200 focus:outline-none" id="smartSearchQueryInput" placeholder="Ask anything: explain a concept, solve a problem, find a topic..." type="text"/>
+</div>
+<button class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" type="submit">
+                Search AI
+              </button>
+</form>
+</div>
+<div class="space-y-4 pt-2" id="smartSearchResultsContainer"></div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 6: FEEDBACK & INSIGHTS -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-feedback-module">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Student Feedback &amp; Ratings</h2>
+
+</div>
+<button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" onclick="toggleModal('modal-submit-feedback')">
+            + Submit New Feedback
+          </button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 space-y-4">
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-3">Recent Feedback Logs</h3>
+<div class="space-y-3" id="feedbackEntriesList"></div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-2">AI Feedback Synthesis</h3>
+
+<div class="p-3.5 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-950 space-y-2">
+<div class="flex items-center gap-2 font-bold text-brand-800">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> System Insights
+                </div>
+<p class="text-[11px] leading-relaxed">
+                  Feedback submissions are automatically processed to identify areas of student improvement and curriculum feedback.
+                </p>
+</div>
+<button class="w-full mt-4 py-2 text-xs font-bold text-brand-600 bg-white border border-brand-200 rounded-xl hover:bg-brand-50 transition" onclick="triggerAiFeedbackSummarization()">
+                Re-Synthesize with Gemini
+              </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- MODALS -->
+<!-- Architecture Modal -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-db-architecture">
+<div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+<div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-900 text-white">
+<div>
+<h3 class="text-base font-bold">Relational Database Schema &amp; System Architecture</h3>
+
+</div>
+<button class="p-2 text-slate-400 hover:text-white rounded-lg" onclick="toggleModal('modal-db-architecture')">✕</button>
+</div>
+<div class="p-6 overflow-y-auto space-y-6 text-xs text-slate-700">
+<div>
+<h4 class="text-xs font-bold uppercase tracking-wider text-brand-600 mb-2">System Flow Architecture</h4>
+<div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 font-mono text-[11px] text-slate-800 leading-relaxed overflow-x-auto">
+[Student Interaction] ──▶ [Student Diary / Quiz Attempts / Search Queries]
+                                    │
+                                    ▼
+                          [Analytics Engine]
+                (Evaluates Accuracy, Time Spent, Topic Failures)
+                                    │
+                                    ▼
+                      [LLM Prompt Orchestrator (Gemini)]
+          (Injects Student Gaps, Pedagogical Instruction, Bloom Level)
+                                    │
+                                    ▼
+        ┌────────────────────────────┴─────────────────────────────┐
+        ▼                                                          ▼
+[Adaptive Question Generator]                      [Personalized Study Plan &amp; Explanations]
+(Generates MCQs for Weak Topics)                   (Feeds back to Student Diary &amp; Teacher Alerts)
+          </div>
+</div>
+</div>
+<div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+<button class="px-4 py-2 bg-slate-800 text-white text-xs font-semibold rounded-xl" onclick="toggleModal('modal-db-architecture')">Close</button>
+</div>
+</div>
+</div>
+<!-- Custom Quiz Modal -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-custom-quiz">
+<div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4 animate-fade-in">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<h3 class="text-sm font-bold text-slate-900">Configure Practice Diagnostic Test</h3>
+<button class="text-slate-400 hover:text-slate-600" onclick="toggleModal('modal-custom-quiz')">✕</button>
+</div>
+<div class="space-y-3 text-xs">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Subject</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="customQuizSubject">
+<option value="Physics">Physics</option>
+<option value="Mathematics">Mathematics</option>
+<option value="Chemistry">Chemistry</option>
+<option value="Computer Science">Computer Science</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Topic</label>
+<input class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="customQuizTopic" placeholder="e.g. Thermodynamics, Linear Algebra..." type="text"/>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Duration</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="customQuizDuration">
+<option value="5">5 Minutes (Sprint)</option>
+<option selected="" value="10">10 Minutes (Standard)</option>
+<option value="20">20 Minutes (Full Length)</option>
+</select>
+</div>
+</div>
+<div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+<button class="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-xl font-semibold" onclick="toggleModal('modal-custom-quiz')">Cancel</button>
+<button class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm transition" onclick="startConfiguredCustomQuiz()">
+          Start Test Now
+        </button>
+</div>
+</div>
+</div>
+<!-- Submit Feedback Modal -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-submit-feedback">
+<div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4 animate-fade-in">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<h3 class="text-sm font-bold text-slate-900">Submit Educational Feedback</h3>
+<button class="text-slate-400 hover:text-slate-600" onclick="toggleModal('modal-submit-feedback')">✕</button>
+</div>
+<div class="space-y-3 text-xs">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Category</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="fbCategory">
+<option value="Course Quality">Course &amp; Content Quality</option>
+<option value="Teacher Feedback">Teacher / Lecture Feedback</option>
+<option value="AI Assistant">AI Tutor &amp; Quiz Accuracy</option>
+<option value="Platform Usability">Platform Usability</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Rating</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold" id="fbRating">
+<option value="5">⭐⭐⭐⭐⭐ Excellent (5/5)</option>
+<option selected="" value="4">⭐⭐⭐⭐ Good (4/5)</option>
+<option value="3">⭐⭐⭐ Average (3/5)</option>
+<option value="2">⭐⭐ Needs Improvement (2/5)</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Your Detailed Remarks</label>
+<textarea class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="fbComments" placeholder="Share your experience or suggestions..." rows="3"></textarea>
+</div>
+</div>
+<div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+<button class="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-xl font-semibold" onclick="toggleModal('modal-submit-feedback')">Cancel</button>
+<button class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm transition" onclick="handleSaveFeedback()">
+          Submit Feedback
+        </button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" id="toastContainer"></div>
+<!-- Persistent subtle footer -->
+<footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400">
+<div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+<span>EduPulse AI • Student Workspace</span>
+<span class="font-mono text-[11px]">Powered by Google Gemini 3 Flash</span>
+</div>
+</footer>
+<!-- Separate Modular Scripts -->
+<script src="js/data.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/student.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+================================================================================
+EDUPULSE AI - TEST EMAILS & LOGIN CREDENTIALS
+================================================================================
+
+1. STUDENT ACCOUNT
+   - Username:          student
+   - Primary Email:     student@school.edu
+   - Alternative Email: aarav.patel@school.edu
+   - Password:          student123
+   - Name:              Aarav Patel (Grade 12 - STEM)
+   - Target Dashboard:  student.html
+
+2. TEACHER ACCOUNT
+   - Username:          teacher
+   - Primary Email:     teacher@school.edu
+   - Alternative Email: r.sharma@school.edu
+   - Password:          teacher123
+   - Name:              Prof. Rajesh Sharma (Senior Physics Faculty)
+   - Target Dashboard:  teacher.html
+
+3. ADMIN ACCOUNT
+   - Username:          admin
+   - Primary Email:     admin@school.edu
+   - Alternative Email: admin@institution.edu
+   - Password:          admin123
+   - Name:              Dr. Sunita Sen (Executive Administrator)
+   - Target Dashboard:  admin.html
+
+4. ADDITIONAL STUDENT
+   - Email:             meera.i@school.edu
+   - Password:          student123
+   - Name:              Meera Iyer (Grade 12 - Pre-Med)
+   - Target Dashboard:  student.html
+
+================================================================================
+LOGIN PAGE: index.html
+(You can enter either the username or the email in the Username field)
+================================================================================

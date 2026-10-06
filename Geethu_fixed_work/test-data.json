@@ -1,0 +1,288 @@
+{
+  "_description": "EduPulse AI - Centralized Test Data & Login Credentials Reference",
+  "_usage": "You can open this file anytime to check test accounts and passwords for each role (Student, Teacher, Admin), along with sample curriculum, quizzes, and diary records.",
+  "testLoginCredentials": {
+    "student": {
+      "role": "student",
+      "username": "student",
+      "loginPage": "index.html",
+      "email": "student@school.edu",
+      "alternativeEmail": "aarav.patel@school.edu",
+      "password": "student123",
+      "name": "Aarav Patel",
+      "class": "Grade 12 - STEM",
+      "description": "Student account with access to learning diary, adaptive quizzes, personal analytics, and AI tutor."
+    },
+    "teacher": {
+      "role": "teacher",
+      "username": "teacher",
+      "loginPage": "index.html",
+      "email": "teacher@school.edu",
+      "alternativeEmail": "r.sharma@school.edu",
+      "password": "teacher123",
+      "name": "Prof. Rajesh Sharma",
+      "class": "Senior Physics Faculty",
+      "description": "Teacher account with access to lecture journal, AI question generator & bank, and class attendance."
+    },
+    "admin": {
+      "role": "admin",
+      "username": "admin",
+      "loginPage": "index.html",
+      "email": "admin@school.edu",
+      "alternativeEmail": "admin@institution.edu",
+      "password": "admin123",
+      "name": "Dr. Sunita Sen",
+      "class": "Executive Administrator",
+      "description": "Administrator account with access to platform KPIs, user permissions, and curriculum catalog."
+    }
+  },
+  "additionalTestUsers": [
+    {
+      "id": "usr_std_002",
+      "role": "student",
+      "loginPage": "index.html",
+      "email": "meera.i@school.edu",
+      "password": "student123",
+      "name": "Meera Iyer",
+      "class": "Grade 12 - Pre-Med",
+      "status": "Active",
+      "description": "Secondary high-performing student account."
+    }
+  ],
+  "sampleCourses": [
+    {
+      "code": "PHY-120",
+      "title": "Advanced Senior Physics",
+      "students": 184,
+      "modules": 14,
+      "completion": "72%"
+    },
+    {
+      "code": "MAT-210",
+      "title": "Differential & Integral Calculus",
+      "students": 210,
+      "modules": 18,
+      "completion": "64%"
+    },
+    {
+      "code": "CHM-115",
+      "title": "Organic & Physical Chemistry",
+      "students": 165,
+      "modules": 12,
+      "completion": "80%"
+    }
+  ],
+  "sampleQuizzes": [
+    {
+      "id": "qz_101",
+      "title": "Faraday's Law & Electromagnetic Induction",
+      "subject": "Physics",
+      "difficulty": "Intermediate",
+      "durationMins": 10,
+      "totalQuestions": 4,
+      "questions": [
+        {
+          "id": "q1",
+          "text": "A magnetic flux through a 100-turn coil changes from 0.5 Wb to 0.1 Wb in 0.2 seconds. What is the induced electromotive force (EMF)?",
+          "options": ["100 V", "200 V", "50 V", "400 V"],
+          "correctIndex": 1,
+          "explanation": "According to Faraday's Law, EMF = -N * (ΔΦ / Δt). Here ΔΦ = 0.1 - 0.5 = -0.4 Wb. Δt = 0.2s. EMF = -100 * (-0.4 / 0.2) = 200 Volts."
+        },
+        {
+          "id": "q2",
+          "text": "Which physical conservation law is directly represented by Lenz's Law?",
+          "options": ["Conservation of Charge", "Conservation of Momentum", "Conservation of Energy", "Conservation of Magnetic Monopoles"],
+          "correctIndex": 2,
+          "explanation": "Lenz's Law ensures that the induced current opposes the change creating it, ensuring mechanical work is converted into electrical energy without violating the Conservation of Energy."
+        },
+        {
+          "id": "q3",
+          "text": "True or False: In a purely inductive AC circuit, the alternating current leads the alternating voltage by π/2 radians (90°).",
+          "options": ["True", "False"],
+          "correctIndex": 1,
+          "explanation": "False. In a purely inductive AC circuit, current LAGS voltage by 90 degrees (ELI mnemonic: In inductor L, EMF E leads current I)."
+        },
+        {
+          "id": "q4",
+          "text": "What is the SI unit of Self-Inductance?",
+          "options": ["Tesla (T)", "Weber (Wb)", "Henry (H)", "Farad (F)"],
+          "correctIndex": 2,
+          "explanation": "Self-inductance and mutual inductance are both measured in Henry (H), equivalent to 1 Weber per Ampere."
+        }
+      ]
+    },
+    {
+      "id": "qz_102",
+      "title": "Calculus: Definite Integrals & Fundamental Theorem",
+      "subject": "Mathematics",
+      "difficulty": "Advanced",
+      "durationMins": 15,
+      "totalQuestions": 3,
+      "questions": [
+        {
+          "id": "q201",
+          "text": "Evaluate the integral ∫ x * e^x dx from 0 to 1.",
+          "options": ["1", "e - 1", "e", "e / 2"],
+          "correctIndex": 0,
+          "explanation": "Using Integration by parts: ∫ u v' = u v - ∫ u' v. With u = x, v' = e^x: [x e^x - e^x] from 0 to 1 = (1*e - e) - (0 - 1) = 0 - (-1) = 1."
+        },
+        {
+          "id": "q202",
+          "text": "What is the derivative of the integral function F(x) = ∫[0 to x] sin(t^2) dt with respect to x?",
+          "options": ["2x cos(x^2)", "sin(x^2)", "-cos(x^2)", "sin(2x)"],
+          "correctIndex": 1,
+          "explanation": "By the First Fundamental Theorem of Calculus, if F(x) = ∫[a to x] f(t) dt, then F'(x) = f(x). Hence F'(x) = sin(x^2)."
+        },
+        {
+          "id": "q203",
+          "text": "True or False: Any continuous function on a closed interval [a, b] is Riemann integrable.",
+          "options": ["True", "False"],
+          "correctIndex": 0,
+          "explanation": "True. Continuity on a compact set [a, b] implies uniform continuity, which guarantees Riemann integrability."
+        }
+      ]
+    },
+    {
+      "id": "qz_103",
+      "title": "Organic Chemistry: Carbonyl Compounds & Nucleophilic Addition",
+      "subject": "Chemistry",
+      "difficulty": "Beginner",
+      "durationMins": 8,
+      "totalQuestions": 3,
+      "questions": [
+        {
+          "id": "q301",
+          "text": "Which of the following compounds gives a positive Tollens' silver mirror test?",
+          "options": ["Acetone", "Propanal (Aldehyde)", "Ethanol", "Acetic acid"],
+          "correctIndex": 1,
+          "explanation": "Tollens' reagent easily oxidizes aliphatic and aromatic aldehydes to carboxylic acid salts while reducing silver ions to metallic silver."
+        },
+        {
+          "id": "q302",
+          "text": "What is the hybridization of the carbonyl carbon in formaldehyde?",
+          "options": ["sp", "sp2", "sp3", "dsp2"],
+          "correctIndex": 1,
+          "explanation": "The carbonyl carbon is double-bonded to oxygen and single-bonded to two hydrogens, forming 3 sigma bonds and 1 pi bond, so it is sp2 hybridized (trigonal planar)."
+        },
+        {
+          "id": "q303",
+          "text": "True or False: Ketones are generally more reactive than aldehydes toward nucleophilic attack.",
+          "options": ["True", "False"],
+          "correctIndex": 1,
+          "explanation": "False. Aldehydes are more reactive due to less steric hindrance and less electron-donating inductive stabilization of the carbonyl carbon."
+        }
+      ]
+    }
+  ],
+  "sampleQuestionBank": [
+    {
+      "id": "qb_1",
+      "subject": "Physics",
+      "topic": "Electromagnetism",
+      "text": "What is the phase difference between current and voltage across a pure inductor?",
+      "type": "MCQ",
+      "difficulty": "Intermediate",
+      "options": ["0°", "90° (Current lags)", "90° (Current leads)", "180°"],
+      "correct": "90° (Current lags)",
+      "explanation": "In pure inductors, voltage leads current by 90 degrees (or current lags voltage by 90 degrees).",
+      "author": "Prof. Sharma"
+    },
+    {
+      "id": "qb_2",
+      "subject": "Mathematics",
+      "topic": "Calculus",
+      "text": "Is the function f(x) = |x| differentiable at x = 0?",
+      "type": "TF",
+      "difficulty": "Beginner",
+      "options": ["True", "False"],
+      "correct": "False",
+      "explanation": "The left-hand derivative is -1 and right-hand derivative is +1. Since they differ, f(x) is not differentiable at x=0.",
+      "author": "Dr. Rao"
+    },
+    {
+      "id": "qb_3",
+      "subject": "Chemistry",
+      "topic": "Organic Chemistry",
+      "text": "Which reagent converts ethanol to ethanal without over-oxidizing to ethanoic acid?",
+      "type": "MCQ",
+      "difficulty": "Intermediate",
+      "options": ["KMnO4 / H+", "Pyridinium Chlorochromate (PCC)", "K2Cr2O7 / H+", "Conc. HNO3"],
+      "correct": "Pyridinium Chlorochromate (PCC)",
+      "explanation": "PCC in anhydrous CH2Cl2 stops the oxidation of primary alcohols at the aldehyde stage.",
+      "author": "Dr. Mukherjee"
+    }
+  ],
+  "sampleStudentDiary": [
+    {
+      "id": "log_1",
+      "date": "2026-09-09",
+      "subject": "Physics",
+      "topic": "Faraday's Law and Self-Inductance",
+      "minutes": 75,
+      "notes": "Derived the formula for EMF in a solenoid coil. Still slightly confused about why Lenz law has a negative sign in the differential equation.",
+      "teacherFeedback": "Great effort Aarav! Remember: the negative sign represents the induced magnetic field fighting the external change. Review page 142.",
+      "status": "Reviewed"
+    },
+    {
+      "id": "log_2",
+      "date": "2026-09-08",
+      "subject": "Mathematics",
+      "topic": "Integration by Parts & Tabular Method",
+      "minutes": 60,
+      "notes": "Solved 12 definite integrals. Tabular LIATE rule method works exceptionally fast for polynomial-exponential products.",
+      "teacherFeedback": "Well done. Keep practicing inverse trigonometric integrals with LIATE.",
+      "status": "Reviewed"
+    }
+  ],
+  "sampleTeacherJournal": [
+    {
+      "id": "t_log_1",
+      "date": "2026-09-10",
+      "className": "Class XII-A",
+      "subject": "Physics",
+      "topic": "Lenz's Law, Eddy Currents & Induction Cooktop Physics",
+      "attendanceCount": "34 / 36",
+      "homework": "Problems 4.1 to 4.8 from NCERT Chapter 6"
+    },
+    {
+      "id": "t_log_2",
+      "date": "2026-09-09",
+      "className": "Class XII-B",
+      "subject": "Physics",
+      "topic": "Mutual Inductance in Coaxial Solenoids",
+      "attendanceCount": "35 / 36",
+      "homework": "Derive coefficient of coupling k"
+    }
+  ],
+  "sampleAttendanceRoster": [
+    { "roll": "1201", "name": "Aarav Patel", "present": true },
+    { "roll": "1202", "name": "Ananya Sharma", "present": true },
+    { "roll": "1203", "name": "Devendra Joshi", "present": true },
+    { "roll": "1204", "name": "Kavita Sundaram", "present": false },
+    { "roll": "1205", "name": "Meera Iyer", "present": true }
+  ],
+  "sampleStudentPerformance": [
+    { "name": "Aarav Patel", "roll": "1201", "avgScore": "82.4%", "attendance": "96%", "weakTopic": "AC Circuits", "risk": "Low" },
+    { "name": "Kavita Sundaram", "roll": "1204", "avgScore": "46.0%", "attendance": "72%", "weakTopic": "Lenz Law Direction", "risk": "High" },
+    { "name": "Devendra Joshi", "roll": "1203", "avgScore": "58.5%", "attendance": "80%", "weakTopic": "Integration by Parts", "risk": "Moderate" },
+    { "name": "Meera Iyer", "roll": "1205", "avgScore": "94.0%", "attendance": "98%", "weakTopic": "None (Excelling)", "risk": "Low" }
+  ],
+  "sampleFeedback": [
+    {
+      "id": "fb_1",
+      "author": "Aarav Patel (Student)",
+      "category": "AI Assistant",
+      "rating": 5,
+      "comment": "The step-by-step breakdown of Lenz Law with the magnet-dropping animation analogy helped me score 85% on the quiz!",
+      "date": "Yesterday"
+    },
+    {
+      "id": "fb_2",
+      "author": "Pooja Nair (Student)",
+      "category": "Course Quality",
+      "rating": 4,
+      "comment": "The question bank problems are directly aligned with board exams. Would love more video diagram solutions.",
+      "date": "2 days ago"
+    }
+  ]
+}

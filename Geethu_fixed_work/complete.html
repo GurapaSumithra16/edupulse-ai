@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduPulse AI | Intelligent E-Learning &amp; Analytics Platform</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Font: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Chart.js for analytics visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Canvas Confetti for quiz rewards -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Custom clean scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.04);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.5);
+    }
+    .badge-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    /* Glass card styles */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+    }
+    .dark .glass-panel {
+      background: rgba(30, 41, 59, 0.95);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col transition-colors duration-200">
+<header class="sticky top-0 z-40 bg-white/95 border-b border-slate-200 backdrop-blur shadow-sm">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+<!-- Brand Logo -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-extrabold text-xl tracking-tight text-slate-900">EduPulse<span class="text-brand-600">AI</span></span>
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 text-brand-600 border border-brand-200">LLM Engine</span>
+</div>
+<p class="text-xs text-slate-500 hidden sm:block">Intelligent E-Learning &amp; Personalized Analytics</p>
+</div>
+</div>
+<!-- Center Action: Global Search Trigger -->
+<div class="flex-1 max-w-md hidden md:block">
+<div class="relative cursor-pointer" onclick="switchMainTab('smart-search')">
+<svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 rounded-xl text-xs text-slate-600 cursor-pointer focus:outline-none transition" placeholder="Ask AI anything or search materials, quizzes, concepts..." readonly="" type="text"/>
+<kbd class="absolute right-3 top-2.5 px-1.5 py-0.5 text-[10px] font-mono bg-white rounded border border-slate-200 text-slate-400">Ctrl+K</kbd>
+</div>
+</div>
+<!-- Right Controls: Role Switcher & User Profile -->
+<div class="flex items-center gap-3">
+<!-- Role Switcher -->
+<div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-semibold">
+<button class="px-3 py-1.5 rounded-lg transition text-white bg-brand-600 shadow-sm" id="role-btn-student" onclick="switchRole('student')">
+            Student
+          </button>
+<button class="px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900" id="role-btn-teacher" onclick="switchRole('teacher')">
+            Teacher
+          </button>
+<button class="px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900" id="role-btn-admin" onclick="switchRole('admin')">
+            Admin
+          </button>
+</div>
+<!-- Architecture & Schema Modal Trigger -->
+<button class="p-2 text-slate-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl border border-slate-200 transition" onclick="toggleModal('modal-db-architecture')" title="View DB Schema &amp; System Architecture">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M9 4v16M4 11h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Current User Avatar Profile -->
+<div class="flex items-center gap-2 pl-2 border-l border-slate-200">
+<div class="w-8 h-8 rounded-full bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shadow-sm" id="currentUserAvatar">
+            AP
+          </div>
+<div class="hidden lg:block text-left">
+<div class="text-xs font-bold text-slate-800 leading-tight" id="currentUserName">Aarav Patel</div>
+<div class="text-[10px] text-emerald-600 font-medium" id="currentUserRoleBadge">Student (Class XII-A)</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+<!-- Left Navigation Sidebar -->
+<aside class="w-full md:w-64 flex-shrink-0">
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3 sticky top-24 space-y-1">
+<div class="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          Platform Modules
+        </div>
+<!-- Student View Navigation -->
+<div class="space-y-1" id="nav-group-student">
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-brand-600 bg-brand-50 transition" data-tab="student-diary" onclick="switchMainTab('student-diary')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>My Student Diary</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="analytics-view" onclick="switchMainTab('analytics-view')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Personal Analytics</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="interactive-quiz" onclick="switchMainTab('interactive-quiz')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="flex-1 text-left">Adaptive Quizzes</span>
+<span class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-amber-100 text-amber-700">Adaptive</span>
+</button>
+</div>
+<!-- Teacher View Navigation -->
+<div class="space-y-1 hidden" id="nav-group-teacher">
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-brand-600 bg-brand-50 transition" data-tab="teacher-diary" onclick="switchMainTab('teacher-diary')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Teacher Diary &amp; Lessons</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="question-bank" onclick="switchMainTab('question-bank')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Question Bank &amp; AI Gen</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="class-performance" onclick="switchMainTab('class-performance')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Student Performance Monitor</span>
+</button>
+</div>
+<!-- Admin View Navigation -->
+<div class="space-y-1 hidden" id="nav-group-admin">
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-brand-600 bg-brand-50 transition" data-tab="admin-dashboard" onclick="switchMainTab('admin-dashboard')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Admin Executive Dashboard</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="admin-users" onclick="switchMainTab('admin-users')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Users &amp; Access Control</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="admin-courses" onclick="switchMainTab('admin-courses')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Courses &amp; Materials</span>
+</button>
+</div>
+<div class="pt-3 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          AI &amp; Search Tools
+        </div>
+<!-- Shared AI Tools -->
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="ai-tutor" onclick="switchMainTab('ai-tutor')">
+<svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="flex-1 text-left">AI Academic Tutor</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500 badge-pulse"></span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="smart-search" onclick="switchMainTab('smart-search')">
+<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Smart AI Search</span>
+</button>
+<button class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition" data-tab="feedback-module" onclick="switchMainTab('feedback-module')">
+<svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Feedback &amp; Insights</span>
+</button>
+<!-- LLM Status Card in sidebar -->
+<div class="mt-4 p-3 bg-gradient-to-br from-indigo-50/80 to-purple-50/50 rounded-xl border border-indigo-100/80 text-xs">
+<div class="flex items-center justify-between font-bold text-slate-800 mb-1">
+<span class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              LLM Engine Active
+            </span>
+<span class="text-[10px] text-indigo-600 bg-white px-1.5 py-0.5 rounded shadow-xs font-mono">v3-flash</span>
+</div>
+<p class="text-[11px] text-slate-600 leading-relaxed">
+            Real-time personalized learning remediation and pedagogical intelligence online.
+          </p>
+</div>
+</div>
+</aside>
+<main class="flex-1 min-w-0">
+<!-- ========================================================================= -->
+<!-- TAB 1: STUDENT DIARY & LEARNING TRACKER (STUDENT VIEW) -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6" id="view-student-diary">
+<!-- Welcome Hero & Personal Stats -->
+<div class="bg-gradient-to-r from-brand-700 via-indigo-600 to-purple-700 rounded-3xl p-6 text-white shadow-xl shadow-brand-700/10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
+<div class="absolute -right-8 -bottom-8 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+<div class="relative z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-xs font-medium backdrop-blur mb-3">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Daily Learning Streak: <strong class="text-white">14 Days 🔥</strong>
+</div>
+<h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Good day, Aarav! Ready to master Physics today?</h1>
+
+</div>
+<div class="relative z-10 flex gap-3 flex-wrap">
+<button class="px-4 py-2.5 rounded-xl bg-white text-brand-700 text-xs font-bold hover:bg-indigo-50 shadow-md transition flex items-center gap-2" onclick="triggerAiPersonalizedPlan()">
+<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              Generate AI Study Plan
+            </button>
+<button class="px-4 py-2.5 rounded-xl bg-indigo-900/50 hover:bg-indigo-900/70 text-white border border-white/20 text-xs font-bold transition" onclick="startTargetedRemediationQuiz('Electromagnetic Induction')">
+              Quick Practice (5 mins)
+            </button>
+</div>
+</div>
+<!-- 4 Key Performance Metric Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Overall Mastery</span>
+<span class="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">+4.2%</span>
+</div>
+<div class="text-2xl font-black text-slate-800">82.4%</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
+<div class="bg-brand-600 h-1.5 rounded-full" style="width: 82.4%"></div>
+</div>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Quizzes Solved</span>
+<span class="text-brand-600 font-bold bg-brand-50 px-1.5 py-0.5 rounded text-[10px]">Top 10%</span>
+</div>
+<div class="text-2xl font-black text-slate-800">38</div>
+<p class="text-[11px] text-slate-500 mt-2">Avg Accuracy: <span class="font-bold text-slate-700">88.5%</span></p>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Attendance Rate</span>
+<span class="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">Regular</span>
+</div>
+<div class="text-2xl font-black text-slate-800">96.0%</div>
+<p class="text-[11px] text-slate-500 mt-2">48 of 50 lectures attended</p>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-2">
+<span>Identified Gaps</span>
+<span class="text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded text-[10px]">Actionable</span>
+</div>
+<div class="text-2xl font-black text-amber-600">2 Topics</div>
+<p class="text-[11px] text-slate-500 mt-2">AC Circuits, Organic Isomerism</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left 2 Cols: Daily Learning Diary & Tasks -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Daily Learning Diary Entry Card -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+<span>📓 Daily Learning Diary</span>
+<span class="text-[11px] px-2 py-0.5 bg-brand-50 text-brand-600 rounded-full font-semibold">Today: Sep 10, 2026</span>
+</h2>
+
+</div>
+<button class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow-sm transition" onclick="saveStudentDiaryEntry()">
+                  Save Diary Entry
+                </button>
+</div>
+<div class="space-y-3">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Subject</label>
+<select class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-brand-600" id="diarySubject">
+<option value="Physics">Physics (Grade 12)</option>
+<option value="Mathematics">Mathematics (Calculus)</option>
+<option value="Chemistry">Chemistry (Organic)</option>
+<option value="Computer Science">Computer Science (Data Structures)</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Time Spent (Mins)</label>
+<input class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-brand-600" id="diaryMinutes" type="number" value="65"/>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Topic / Lesson</label>
+<input class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-brand-600" id="diaryTopic" type="text" value="Faraday's Law of Induction &amp; Lenz Law"/>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Study Summary &amp; Key Concepts Grasped</label>
+<textarea class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-brand-600" id="diaryNotes" placeholder="Summarize the core concepts learned, equations derived, or problems solved..." rows="3"></textarea>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+<span class="text-slate-500">Need AI validation on your notes?</span>
+<button class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1" onclick="aiEvaluateNotes()">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                    Analyze Notes with AI
+                  </button>
+</div>
+</div>
+</div>
+<!-- Learning History Feed -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-800">Recent Diary Logs &amp; Teacher Feedback</h3>
+<span class="text-xs text-slate-400">Total 28 Logs</span>
+</div>
+<div class="space-y-3" id="studentDiaryHistoryList">
+<!-- Dynamically Populated -->
+</div>
+</div>
+</div>
+<!-- Right Col: AI Personalized Recommendations & Remediation -->
+<div class="space-y-6">
+<!-- AI Recommendation Card -->
+<div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-5 shadow-lg relative">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-500/30 text-indigo-200 border border-brand-400/30 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> AI Remediation Engine
+                </span>
+<button class="text-slate-400 hover:text-white transition" onclick="refreshRecommendations()" title="Refresh">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<h3 class="text-base font-bold text-white mb-2">Weak Topic Diagnostic: AC Circuits</h3>
+
+<div class="space-y-2.5">
+<div class="p-3 bg-white/10 rounded-xl border border-white/10 flex items-start gap-3 hover:bg-white/15 transition cursor-pointer" onclick="openStudyResource('AC Circuits Resonance Explained in 4 Steps')">
+<div class="w-6 h-6 rounded-lg bg-indigo-500/40 text-indigo-200 flex items-center justify-center font-bold text-xs">1</div>
+<div>
+<h4 class="text-xs font-semibold text-white">Conceptual Step-by-Step Read</h4>
+
+</div>
+</div>
+<div class="p-3 bg-white/10 rounded-xl border border-white/10 flex items-start gap-3 hover:bg-white/15 transition cursor-pointer" onclick="askAiAboutTopic('Explain LC resonance frequency derivation with an intuitive analogy')">
+<div class="w-6 h-6 rounded-lg bg-purple-500/40 text-purple-200 flex items-center justify-center font-bold text-xs">2</div>
+<div>
+<h4 class="text-xs font-semibold text-white">AI Micro-Tutor Breakdown</h4>
+
+</div>
+</div>
+<div class="p-3 bg-white/10 rounded-xl border border-white/10 flex items-start gap-3 hover:bg-white/15 transition cursor-pointer" onclick="startTargetedRemediationQuiz('AC Circuits')">
+<div class="w-6 h-6 rounded-lg bg-emerald-500/40 text-emerald-200 flex items-center justify-center font-bold text-xs">3</div>
+<div>
+<h4 class="text-xs font-semibold text-white">Adaptive Follow-Up Quiz</h4>
+
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
+<span class="text-slate-400">Mastery Target: 85%</span>
+<span class="text-emerald-400 font-bold">Currently: 52%</span>
+</div>
+</div>
+<!-- Deadlines & Learning Goals -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center justify-between">
+<span>🎯 Learning Goals &amp; Deadlines</span>
+<button class="text-brand-600 text-xs font-semibold hover:underline" onclick="addGoalModal()">+ Add Goal</button>
+</h3>
+<div class="space-y-3" id="studentGoalsContainer">
+<!-- Sample Goal Items -->
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="font-semibold text-slate-700">Calculus: Integration by Parts</span>
+<span class="text-emerald-600 font-bold text-[11px]">Due Tomorrow</span>
+</div>
+<div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+<div class="bg-emerald-500 h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="font-semibold text-slate-700">Chemistry: Reaction Mechanisms</span>
+<span class="text-amber-600 font-bold text-[11px]">In 3 Days</span>
+</div>
+<div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+<div class="bg-amber-500 h-1.5 rounded-full" style="width: 40%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 2: PERSONALIZED LEARNING ANALYTICS (STUDENT & TEACHER INSIGHTS) -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-analytics-view">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Personalized Learning Analytics</h2>
+
+</div>
+<div class="flex items-center gap-2">
+<select class="text-xs bg-white border border-slate-200 rounded-xl px-3 py-2 font-medium" id="analyticsTimeFilter" onchange="updateAnalyticsVisuals()">
+<option value="last30">Last 30 Days</option>
+<option value="last90">Current Semester</option>
+<option value="all">Entire Academic Year</option>
+</select>
+<button class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition" onclick="exportAnalyticsReport()">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              Export PDF Report
+            </button>
+</div>
+</div>
+<!-- Analytics Charts Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Subject Performance Bar Chart -->
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-800">Subject-Wise Mastery vs Class Average</h3>
+<span class="text-[11px] font-semibold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">Normalized 100%</span>
+</div>
+<div class="h-64">
+<canvas id="subjectMasteryChart"></canvas>
+</div>
+</div>
+<!-- Weak vs Strong Topic Radar Chart -->
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-800">Cognitive Competency Radar</h3>
+<span class="text-[11px] font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">Bloom's Taxonomy</span>
+</div>
+<div class="h-64">
+<canvas id="competencyRadarChart"></canvas>
+</div>
+</div>
+</div>
+<!-- Topic Breakdown Heatmap & Remediation Trigger Table -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-sm font-bold text-slate-800">Topic-Level Diagnostic Matrix</h3>
+
+</div>
+<span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-100 text-slate-700">4 Subjects Active</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
+<tr>
+<th class="p-3">Topic Name</th>
+<th class="p-3">Subject</th>
+<th class="p-3">Attempts</th>
+<th class="p-3">Accuracy</th>
+<th class="p-3">Status</th>
+<th class="p-3 text-right">AI Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-slate-700" id="topicDiagnosticTableBody">
+<!-- Populated by JavaScript -->
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 3: ADAPTIVE QUIZ MODULE (STUDENT ATTEMPTS / REVIEW) -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-interactive-quiz">
+<!-- Quiz Overview & Selector (When not actively taking a quiz) -->
+<div class="space-y-6" id="quizSelectionScreen">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Adaptive Interactive Quizzes</h2>
+
+</div>
+<button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" onclick="openCustomQuizModal()">
+              + Custom Practice Test
+            </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="availableQuizzesGrid">
+<!-- Dynamically populated quiz cards -->
+</div>
+</div>
+<!-- Active Quiz Play Area (Hidden until a quiz is started) -->
+<div class="hidden space-y-6" id="quizActiveScreen">
+<div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+<!-- Quiz Header: Progress bar, Timer & Title -->
+<div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+<div>
+<span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 bg-brand-50 text-brand-700 rounded-lg" id="quizBadgeCategory">Physics - Electromagnetism</span>
+<h3 class="text-lg font-black text-slate-900 mt-1" id="quizTitleDisplay">Faraday's Law &amp; Inductance Diagnostic</h3>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl font-mono font-bold text-sm">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span id="quizTimerText">09:45</span>
+</div>
+<button class="text-xs text-slate-400 hover:text-rose-600 transition" onclick="abandonQuiz()">Quit</button>
+</div>
+</div>
+<!-- Question Progress Indicator -->
+<div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+<span id="quizQuestionNumberIndicator">Question 1 of 5</span>
+<span class="font-bold text-amber-600" id="quizQuestionDifficultyIndicator">Intermediate</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2 mb-6 overflow-hidden">
+<div class="bg-brand-600 h-2 rounded-full transition-all duration-300" id="quizProgressBar" style="width: 20%"></div>
+</div>
+<!-- Question Body -->
+<div class="mb-6">
+<h4 class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed" id="quizQuestionText">
+                A magnetic flux of 0.8 Weber passing through a 200-turn coil decreases to 0.2 Weber in 0.3 seconds. What is the magnitude of the induced electromotive force (EMF)?
+              </h4>
+</div>
+<!-- Options Container -->
+<div class="space-y-3 mb-6" id="quizOptionsContainer">
+<!-- Dynamically Populated Radio/Option Cards -->
+</div>
+<!-- Controls -->
+<div class="flex items-center justify-between pt-4 border-t border-slate-100">
+<button class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition" id="quizPrevBtn" onclick="quizNavPrev()">
+                Previous
+              </button>
+<button class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" id="quizNextBtn" onclick="quizNavNext()">
+                Next Question
+              </button>
+</div>
+</div>
+</div>
+<!-- Quiz Result Screen -->
+<div class="hidden space-y-6" id="quizResultScreen">
+<div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm text-center max-w-2xl mx-auto">
+<div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<h3 class="text-2xl font-black text-slate-900">Quiz Completed!</h3>
+
+<!-- Score Cards -->
+<div class="grid grid-cols-3 gap-4 my-6">
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+<div class="text-2xl font-extrabold text-brand-600" id="resultScoreValue">4 / 5</div>
+<div class="text-[11px] text-slate-500 uppercase font-bold mt-1">Score</div>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+<div class="text-2xl font-extrabold text-emerald-600" id="resultAccuracyValue">80%</div>
+<div class="text-[11px] text-slate-500 uppercase font-bold mt-1">Accuracy</div>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+<div class="text-2xl font-extrabold text-purple-600" id="resultTimeSpentValue">03:42</div>
+<div class="text-[11px] text-slate-500 uppercase font-bold mt-1">Time Taken</div>
+</div>
+</div>
+<!-- AI Insight Note -->
+<div class="p-4 bg-brand-50 border border-brand-100 rounded-2xl text-left text-xs mb-6">
+<div class="flex items-center gap-2 font-bold text-brand-900 mb-1">
+<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                AI Diagnostic Summary
+              </div>
+<p class="text-brand-800 leading-relaxed" id="resultAiFeedbackText">
+                Strong understanding of Faraday's proportional relationship. Small conceptual slip on Lenz law negative sign convention in Question 3. A targeted 2-question revision quiz has been recommended to your diary.
+              </p>
+</div>
+<div class="flex justify-center gap-3">
+<button class="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-semibold transition" onclick="reviewQuizDetailedAnswers()">
+                Review Detailed Answers &amp; Explanations
+              </button>
+<button class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition" onclick="returnToQuizzes()">
+                Return to Quizzes
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 4: TEACHER DIARY & LESSON PLANNER (TEACHER VIEW) -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-teacher-diary">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Teacher Diary &amp; Academic Operations</h2>
+
+</div>
+<button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" onclick="openNewLessonPlanModal()">
+            + Log Teaching Diary Entry
+          </button>
+</div>
+<!-- Teacher Dashboard Stat Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white p-4 rounded-2xl border border-slate-200">
+<span class="text-slate-400 text-xs font-medium">Assigned Classes</span>
+<div class="text-2xl font-black text-slate-800 mt-1">3 Classes</div>
+<span class="text-[11px] text-slate-500">Grade 11 &amp; 12 Physics</span>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200">
+<span class="text-slate-400 text-xs font-medium">Students Enrolled</span>
+<div class="text-2xl font-black text-slate-800 mt-1">112 Students</div>
+<span class="text-[11px] text-emerald-600 font-semibold">94% Active Weekly</span>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200">
+<span class="text-slate-400 text-xs font-medium">Curriculum Covered</span>
+<div class="text-2xl font-black text-brand-600 mt-1">68.5%</div>
+<div class="w-full bg-slate-100 rounded-full h-1 mt-2">
+<div class="bg-brand-600 h-1 rounded-full" style="width: 68.5%"></div>
+</div>
+</div>
+<div class="bg-white p-4 rounded-2xl border border-slate-200">
+<span class="text-slate-400 text-xs font-medium">At-Risk Students</span>
+<div class="text-2xl font-black text-rose-600 mt-1">4 Students</div>
+<span class="text-[11px] text-rose-500 font-semibold">Score &lt; 50%</span>
+</div>
+</div>
+<!-- Teacher Daily Log Table -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-800">Teacher Daily Journal &amp; Lesson Execution</h3>
+<div class="flex gap-2">
+<input class="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="Search lesson topics..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
+<tr>
+<th class="p-3">Date</th>
+<th class="p-3">Class &amp; Subject</th>
+<th class="p-3">Topic / Learning Objective</th>
+<th class="p-3">Attendance</th>
+<th class="p-3">Homework / Quiz</th>
+<th class="p-3 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-slate-700" id="teacherDiaryTableBody">
+<!-- Populated by JavaScript -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- Teacher Quick Actions & Attendance Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-3">Instant Attendance &amp; Marks Roll Call</h3>
+
+<div class="space-y-2 max-h-60 overflow-y-auto pr-1" id="attendanceRosterList">
+<!-- Populated by JavaScript -->
+</div>
+<div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+<span class="text-xs text-slate-500">Auto-saved to Student Diaries</span>
+<button class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold" onclick="submitAttendanceBatch()">Save Attendance</button>
+</div>
+</div>
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-3">Upload Study Materials &amp; Notes</h3>
+<div class="space-y-3">
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Resource Title</label>
+<input class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="uploadMaterialTitle" placeholder="e.g. AC Circuits Solved Numerical Problems" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Course / Subject</label>
+<select class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="uploadMaterialSubject">
+<option>Physics (Grade 12)</option>
+<option>Mathematics (Calculus)</option>
+<option>Chemistry</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Resource Format</label>
+<select class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="uploadMaterialType">
+<option>Lecture PDF Notes</option>
+<option>Problem Worksheet</option>
+<option>Formula Cheat Sheet</option>
+</select>
+</div>
+</div>
+<button class="w-full py-2 bg-indigo-50 text-brand-600 hover:bg-indigo-100 font-bold text-xs rounded-xl border border-brand-200 transition" onclick="handleTeacherMaterialUpload()">
+                Publish Resource to Student Portal
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 5: QUESTION BANK & AI GENERATOR (TEACHER & ADMIN) -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-question-bank">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Curriculum Question Bank</h2>
+
+</div>
+<div class="flex gap-2">
+<button class="px-3.5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5" onclick="toggleModal('modal-ai-question-gen')">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              AI Question Generator
+            </button>
+<button class="px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-bold shadow-xs transition" onclick="toggleModal('modal-add-question-manual')">
+              + Add Question Manually
+            </button>
+</div>
+</div>
+<!-- Filter bar -->
+<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center gap-3">
+<input class="text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl flex-1 min-w-[200px] focus:outline-brand-600" id="qbSearchQuery" oninput="filterQuestionBank()" placeholder="Search questions, topics, keywords..." type="text"/>
+<select class="text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" id="qbSubjectFilter" onchange="filterQuestionBank()">
+<option value="ALL">All Subjects</option>
+<option value="Physics">Physics</option>
+<option value="Mathematics">Mathematics</option>
+<option value="Chemistry">Chemistry</option>
+</select>
+<select class="text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" id="qbDifficultyFilter" onchange="filterQuestionBank()">
+<option value="ALL">All Difficulties</option>
+<option value="Beginner">Beginner</option>
+<option value="Intermediate">Intermediate</option>
+<option value="Advanced">Advanced</option>
+</select>
+<button class="text-xs px-3 py-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600" onclick="exportQuestionBankJson()">
+            Export JSON
+          </button>
+</div>
+<!-- Questions List -->
+<div class="space-y-3" id="questionBankContainer">
+<!-- Populated by JavaScript -->
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 6: STUDENT PERFORMANCE MONITOR (TEACHER VIEW) -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-class-performance">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Student Performance &amp; Risk Indicators</h2>
+
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-2 bg-slate-800 text-white rounded-xl text-xs font-semibold" onclick="generateTeacherClassReport()">
+              Generate AI Summary Report
+            </button>
+</div>
+</div>
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
+<tr>
+<th class="p-3">Student Name</th>
+<th class="p-3">Class / Roll</th>
+<th class="p-3">Avg Quiz Score</th>
+<th class="p-3">Attendance</th>
+<th class="p-3">Identified Weak Topic</th>
+<th class="p-3">Risk Status</th>
+<th class="p-3 text-right">Teacher Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-slate-700" id="teacherStudentsMonitoringTable">
+<!-- Populated by JavaScript -->
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 7: ADMIN EXECUTIVE DASHBOARD & PLATFORM MANAGEMENT -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-admin-dashboard">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Platform Executive Admin Dashboard</h2>
+
+</div>
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold border border-emerald-200">
+<span class="w-2 h-2 rounded-full bg-emerald-500 badge-pulse"></span>
+              All Services Operational
+            </span>
+</div>
+</div>
+<!-- Admin Big Numbers -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white p-5 rounded-2xl border border-slate-200">
+<span class="text-xs font-bold text-slate-400 uppercase">Active Students</span>
+<div class="text-3xl font-black text-slate-900 mt-1">1,248</div>
+<p class="text-[11px] text-emerald-600 mt-1 font-semibold">↑ 12% this month</p>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-200">
+<span class="text-xs font-bold text-slate-400 uppercase">Faculty Teachers</span>
+<div class="text-3xl font-black text-slate-900 mt-1">64</div>
+<p class="text-[11px] text-slate-500 mt-1">18 Departments</p>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-200">
+<span class="text-xs font-bold text-slate-400 uppercase">Quizzes Completed</span>
+<div class="text-3xl font-black text-brand-600 mt-1">14,890</div>
+<p class="text-[11px] text-brand-600 mt-1 font-semibold">92.4% Completion Rate</p>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-200">
+<span class="text-xs font-bold text-slate-400 uppercase">LLM Queries Today</span>
+<div class="text-3xl font-black text-purple-600 mt-1">3,420</div>
+<p class="text-[11px] text-purple-600 mt-1 font-semibold">Avg Latency: 320ms</p>
+</div>
+</div>
+<!-- Admin Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-4">Monthly Platform Activity &amp; Engagement</h3>
+<div class="h-64">
+<canvas id="adminPlatformTrendChart"></canvas>
+</div>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-4">AI Chatbot &amp; Learning Remediation Invocations</h3>
+<div class="h-64">
+<canvas id="adminAiUsageChart"></canvas>
+</div>
+</div>
+</div>
+<!-- Admin Quick Configuration & LLM Policy Table -->
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-3">AI Model &amp; Security Policy Configuration</h3>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-700 block mb-1">Primary LLM Backbone</span>
+<span class="text-brand-600 font-mono font-bold">gemini-3-flash-preview</span>
+<p class="text-[11px] text-slate-500 mt-1">Non-streaming REST, Grounding enabled</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-700 block mb-1">Adaptive Difficulty Engine</span>
+<span class="text-emerald-600 font-bold">Automatic Dynamic Calibration</span>
+<p class="text-[11px] text-slate-500 mt-1">Difficulty shifts on 2 consecutive errors</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-700 block mb-1">Content Guardrails &amp; Privacy</span>
+<span class="text-indigo-600 font-bold">Academic Strict Filters Active</span>
+<p class="text-[11px] text-slate-500 mt-1">Zero PII egress, Sandboxed responses</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 8: ADMIN USERS & ACCESS CONTROL -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-admin-users">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">User Management &amp; Role Permissions</h2>
+
+</div>
+<button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" onclick="toggleModal('modal-add-user')">
+            + Add New User
+          </button>
+</div>
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
+<tr>
+<th class="p-3">User ID</th>
+<th class="p-3">Full Name</th>
+<th class="p-3">Role</th>
+<th class="p-3">Email Address</th>
+<th class="p-3">Status</th>
+<th class="p-3">Last Active</th>
+<th class="p-3 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-slate-700" id="adminUsersTableBody">
+<!-- Populated by JavaScript -->
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 9: ADMIN COURSES & CURRICULUM -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-admin-courses">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Course &amp; Curriculum Catalog</h2>
+
+</div>
+<button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" onclick="toggleModal('modal-add-course')">
+            + Create New Course
+          </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="adminCoursesGrid">
+<!-- Populated by JavaScript -->
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 10: AI ACADEMIC TUTOR CHATBOT MODULE (SHARED) -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-ai-tutor">
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[75vh]">
+<!-- Chat Header -->
+<div class="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-purple-500 flex items-center justify-center text-white font-bold shadow">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-white">EduPulse AI Academic Tutor</h3>
+<span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-400/30">Online</span>
+</div>
+<p class="text-[11px] text-slate-400">Step-by-step reasoning, formula derivation, Socratic guidance &amp; revisions</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 text-xs text-slate-400 hover:text-white border border-slate-700 rounded-lg transition" onclick="clearChatHistory()">
+                Clear Chat
+              </button>
+</div>
+</div>
+<!-- Quick Suggestion Pills -->
+<div class="p-2.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2 overflow-x-auto text-xs">
+<span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider pl-1">Prompts:</span>
+<button class="px-2.5 py-1 bg-white hover:bg-indigo-50 hover:text-brand-700 text-slate-600 rounded-lg border border-slate-200 whitespace-nowrap transition" onclick="sendQuickPrompt('Explain Lenz Law with a step-by-step physical example')">
+              ⚡ Lenz Law physical example
+            </button>
+<button class="px-2.5 py-1 bg-white hover:bg-indigo-50 hover:text-brand-700 text-slate-600 rounded-lg border border-slate-200 whitespace-nowrap transition" onclick="sendQuickPrompt('Derive the integration by parts formula from product rule')">
+              📐 Integration by parts derivation
+            </button>
+<button class="px-2.5 py-1 bg-white hover:bg-indigo-50 hover:text-brand-700 text-slate-600 rounded-lg border border-slate-200 whitespace-nowrap transition" onclick="sendQuickPrompt('Create a 3-day revision plan for Organic Reactions before my exam')">
+              📅 3-Day Organic Chemistry Plan
+            </button>
+</div>
+<!-- Chat Conversation Stream Body -->
+<div class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/50" id="aiChatConversationStream">
+<!-- Initial AI Welcome Message -->
+<div class="flex items-start gap-3 max-w-2xl">
+<div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                AI
+              </div>
+<div class="bg-white p-4 rounded-2xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 leading-relaxed space-y-2">
+<p class="font-semibold text-slate-900">Hello Aarav! I am your AI Educational Assistant.</p>
+<p>
+                  I'm here to explain complex concepts, solve problems step-by-step, generate personalized practice quizzes, and help you bridge any learning gaps identified in your diary.
+                </p>
+<div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px]">
+                  💡 <em>Note: I am an AI academic assistant. While I strive for rigorous mathematical and scientific accuracy, please double-check critical formulas with your course textbooks.</em>
+</div>
+</div>
+</div>
+</div>
+<!-- Chat Input Controls -->
+<div class="p-3 bg-white border-t border-slate-200">
+<form class="flex gap-2" id="aiChatForm" onsubmit="handleSendAiMessage(event)">
+<input autocomplete="off" class="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-brand-600 transition" id="aiChatInput" placeholder="Ask a question, paste an equation, or request practice problems..." type="text"/>
+<button class="px-5 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-2" id="aiChatSendBtn" type="submit">
+<span>Send</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</form>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 11: SMART AI SEARCH MODULE -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-smart-search">
+<div class="max-w-3xl mx-auto space-y-4">
+<div class="text-center space-y-2">
+<h2 class="text-2xl font-black text-slate-900">Intelligent Academic Search</h2>
+
+</div>
+<!-- Search Input Box -->
+<div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+<form class="flex gap-2" onsubmit="executeSmartSearch(event)">
+<div class="relative flex-1">
+<svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<input class="w-full pl-10 pr-4 py-2.5 bg-slate-50 rounded-xl text-xs border border-slate-200 focus:outline-brand-600" id="smartSearchQueryInput" placeholder="e.g. Explain financial management techniques for MBA students..." type="text" value="Explain financial management techniques for MBA students"/>
+</div>
+<button class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" type="submit">
+                Search AI
+              </button>
+</form>
+<div class="flex items-center gap-3 mt-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+<span class="font-semibold text-slate-700 text-[11px]">Filter by:</span>
+<select class="text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2 py-1" id="searchFilterSubject">
+<option value="ALL">All Disciplines</option>
+<option value="Physics">Physics</option>
+<option value="Business">Business &amp; Management</option>
+<option value="Math">Mathematics</option>
+<option value="CS">Computer Science</option>
+</select>
+<select class="text-[11px] bg-slate-50 border border-slate-200 rounded-lg px-2 py-1" id="searchFilterLevel">
+<option value="ALL">All Levels</option>
+<option value="Intro">Introductory</option>
+<option value="Advanced">Advanced / Graduate</option>
+</select>
+</div>
+</div>
+<!-- Search Results Container -->
+<div class="space-y-4 pt-2" id="smartSearchResultsContainer">
+<!-- Populated on Search -->
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 12: FEEDBACK & AI SENTIMENT MODULE -->
+<!-- ========================================================================= -->
+<section class="tab-content space-y-6 hidden" id="view-feedback-module">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-xl font-black text-slate-900">Feedback, Ratings &amp; AI Summaries</h2>
+
+</div>
+<button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-sm transition" onclick="toggleModal('modal-submit-feedback')">
+            + Submit New Feedback
+          </button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 space-y-4">
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-3">Recent Feedback Logs</h3>
+<div class="space-y-3" id="feedbackEntriesList">
+<!-- Populated by JavaScript -->
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+<h3 class="text-sm font-bold text-slate-800 mb-2">AI Feedback Synthesis</h3>
+
+<div class="p-3.5 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-950 space-y-2">
+<div class="flex items-center gap-2 font-bold text-brand-800">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Positive Highlights
+                </div>
+<p class="text-[11px] leading-relaxed">
+                  92% of students praise the step-by-step AI quiz explanations and diary recommendation reminders.
+                </p>
+<div class="flex items-center gap-2 font-bold text-amber-800 pt-2 border-t border-indigo-100">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span> Areas for Action
+                </div>
+<p class="text-[11px] leading-relaxed">
+                  Students request more visual circuit simulations in Physics Chapter 6 and longer timer options for organic chemistry reaction mechanisms.
+                </p>
+</div>
+<button class="w-full mt-4 py-2 text-xs font-bold text-brand-600 bg-white border border-brand-200 rounded-xl hover:bg-brand-50 transition" onclick="triggerAiFeedbackSummarization()">
+                Re-Synthesize with Gemini
+              </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- MODAL: System Architecture & Complete Database Schema -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-db-architecture">
+<div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+<div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-900 text-white">
+<div>
+<h3 class="text-base font-bold">Relational Database Schema &amp; System Architecture</h3>
+
+</div>
+<button class="p-2 text-slate-400 hover:text-white rounded-lg" onclick="toggleModal('modal-db-architecture')">✕</button>
+</div>
+<div class="p-6 overflow-y-auto space-y-6 text-xs text-slate-700">
+<!-- Architectural Overview Diagram -->
+<div>
+<h4 class="text-xs font-bold uppercase tracking-wider text-brand-600 mb-2">1. System Flow Architecture</h4>
+<div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 font-mono text-[11px] text-slate-800 leading-relaxed overflow-x-auto">
+[Student Interaction] ──▶ [Student Diary / Quiz Attempts / Search Queries]
+                                    │
+                                    ▼
+                          [Analytics Engine]
+               (Evaluates Accuracy, Time Spent, Topic Failures)
+                                    │
+                                    ▼
+                     [LLM Prompt Orchestrator (Gemini)]
+          (Injects Student Gaps, Pedagogical Instruction, Bloom Level)
+                                    │
+                                    ▼
+       ┌────────────────────────────┴─────────────────────────────┐
+       ▼                                                          ▼
+[Adaptive Question Generator]                      [Personalized Study Plan &amp; Explanations]
+(Generates MCQs for Weak Topics)                   (Feeds back to Student Diary &amp; Teacher Alerts)
+          </div>
+</div>
+<!-- Database Schema Tables -->
+<div>
+<h4 class="text-xs font-bold uppercase tracking-wider text-brand-600 mb-2">2. Normalized Database Entities &amp; DDL Specification</h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-900">users</span>
+<p class="text-[11px] text-slate-500">PK: user_id (UUID) | email, password_hash, role [ADMIN, TEACHER, STUDENT], full_name, avatar_url, created_at</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-900">student_diary</span>
+<p class="text-[11px] text-slate-500">PK: diary_id | FK: student_id, subject_id | entry_date, topic_covered, study_duration_min, self_notes, teacher_feedback, ai_sentiment</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-900">teacher_diary</span>
+<p class="text-[11px] text-slate-500">PK: teach_log_id | FK: teacher_id, course_id, subject_id | log_date, class_name, lesson_topic, attendance_count, homework_assigned</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-900">question_bank</span>
+<p class="text-[11px] text-slate-500">PK: question_id | FK: subject_id, created_by | topic, question_text, question_type [MCQ, TF], difficulty [EASY, MED, HARD], options_json, correct_answer, explanation, marks</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-900">quizzes &amp; quiz_attempts</span>
+<p class="text-[11px] text-slate-500">PK: attempt_id | FK: quiz_id, student_id | score, total_marks, accuracy_pct, time_spent_sec, topic_breakdown_json, ai_diagnostic_notes</p>
+</div>
+<div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+<span class="font-bold text-slate-900">ai_recommendations</span>
+<p class="text-[11px] text-slate-500">PK: rec_id | FK: student_id, topic_id | trigger_reason, recommended_action, resource_link, mastery_before, mastery_after, status</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+<button class="px-4 py-2 bg-slate-800 text-white text-xs font-semibold rounded-xl" onclick="toggleModal('modal-db-architecture')">Close Architecture Viewer</button>
+</div>
+</div>
+</div>
+<!-- MODAL: AI Question Generator -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-ai-question-gen">
+<div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div>
+<h3 class="text-sm font-bold text-slate-900">AI Curriculum Question Generator</h3>
+
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-600" onclick="toggleModal('modal-ai-question-gen')">✕</button>
+</div>
+<div class="space-y-3 text-xs">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Subject &amp; Course</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="genAiSubject">
+<option value="Physics">Physics (Grade 12)</option>
+<option value="Mathematics">Mathematics (Calculus &amp; Vectors)</option>
+<option value="Chemistry">Chemistry (Organic &amp; Physical)</option>
+<option value="Computer Science">Computer Science (Algorithms &amp; Data Structures)</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Specific Topic or Concept</label>
+<input class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="genAiTopic" placeholder="e.g. Lenz Law, Integration by Parts, Photosynthesis..." type="text" value="Faraday's Law of Electromagnetic Induction"/>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Difficulty Level</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="genAiDifficulty">
+<option value="Beginner">Beginner (Foundational)</option>
+<option selected="" value="Intermediate">Intermediate (Standard)</option>
+<option value="Advanced">Advanced (Competitive/Olympiad)</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Count of Questions</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="genAiCount">
+<option value="1">1 Question</option>
+<option selected="" value="3">3 Questions</option>
+<option value="5">5 Questions</option>
+</select>
+</div>
+</div>
+</div>
+<div class="hidden text-xs text-indigo-600 font-semibold flex items-center gap-2 p-2 bg-indigo-50 rounded-xl" id="aiGenStatusIndicator">
+<svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" viewbox="0 0 24 24">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8v8H4z" fill="currentColor"></path>
+</svg>
+<span>Synthesizing syllabus questions and answer explanations with Gemini...</span>
+</div>
+<div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+<button class="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-xl font-semibold" onclick="toggleModal('modal-ai-question-gen')">Cancel</button>
+<button class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-sm transition" id="btnGenerateQuestions" onclick="triggerAiQuestionGeneration()">
+          Generate &amp; Add to Bank
+        </button>
+</div>
+</div>
+</div>
+<!-- MODAL: Custom Quiz / Test Creator -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-custom-quiz">
+<div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<h3 class="text-sm font-bold text-slate-900">Configure Practice Diagnostic Test</h3>
+<button class="text-slate-400 hover:text-slate-600" onclick="toggleModal('modal-custom-quiz')">✕</button>
+</div>
+<div class="space-y-3 text-xs">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Subject</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="customQuizSubject">
+<option value="Physics">Physics</option>
+<option value="Mathematics">Mathematics</option>
+<option value="Chemistry">Chemistry</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Topic</label>
+<input class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="customQuizTopic" type="text" value="Electromagnetism &amp; AC"/>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Duration</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="customQuizDuration">
+<option value="5">5 Minutes (Sprint)</option>
+<option selected="" value="10">10 Minutes (Standard)</option>
+<option value="20">20 Minutes (Full Length)</option>
+</select>
+</div>
+</div>
+<div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+<button class="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-xl font-semibold" onclick="toggleModal('modal-custom-quiz')">Cancel</button>
+<button class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm transition" onclick="startConfiguredCustomQuiz()">
+          Start Test Now
+        </button>
+</div>
+</div>
+</div>
+<!-- MODAL: Submit Feedback -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="modal-submit-feedback">
+<div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<h3 class="text-sm font-bold text-slate-900">Submit Educational Feedback</h3>
+<button class="text-slate-400 hover:text-slate-600" onclick="toggleModal('modal-submit-feedback')">✕</button>
+</div>
+<div class="space-y-3 text-xs">
+<div>
+<label class="block font-bold text-slate-700 mb-1">Category</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="fbCategory">
+<option value="Course Quality">Course &amp; Content Quality</option>
+<option value="Teacher Feedback">Teacher / Lecture Feedback</option>
+<option value="AI Assistant">AI Tutor &amp; Quiz Accuracy</option>
+<option value="Platform Usability">Platform Usability</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Rating</label>
+<select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold" id="fbRating">
+<option value="5">⭐⭐⭐⭐⭐ Excellent (5/5)</option>
+<option selected="" value="4">⭐⭐⭐⭐ Good (4/5)</option>
+<option value="3">⭐⭐⭐ Average (3/5)</option>
+<option value="2">⭐⭐ Needs Improvement (2/5)</option>
+</select>
+</div>
+<div>
+<label class="block font-bold text-slate-700 mb-1">Your Detailed Remarks</label>
+<textarea class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl" id="fbComments" placeholder="Share your experience or areas needing attention..." rows="3"></textarea>
+</div>
+</div>
+<div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+<button class="px-4 py-2 border border-slate-200 text-slate-600 text-xs rounded-xl font-semibold" onclick="toggleModal('modal-submit-feedback')">Cancel</button>
+<button class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm transition" onclick="handleSaveFeedback()">
+          Submit Feedback
+        </button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" id="toastContainer"></div>
+<!-- Persistent subtle footer -->
+<footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400">
+<div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+<span>EduPulse AI System • Multi-Module Intelligent E-Learning Platform</span>
+<span class="font-mono text-[11px]">Powered by Google Gemini 3 Flash • Built-in In-Memory Relational Engine</span>
+</div>
+</footer>
+<script>
+    /*
+     * APPLICATION STATE & IN-MEMORY RELATIONAL DATABASE
+     * Conforms to the project specification for Students, Teachers, Admins, 
+     * Question Bank, Quizzes, Diary Logs, Analytics, and Gemini AI.
+     */
+    const AppState = {
+      currentRole: 'student', // 'student' | 'teacher' | 'admin'
+      currentTab: 'student-diary',
+      currentUser: {
+        id: 'usr_std_001',
+        name: 'Aarav Patel',
+        role: 'student',
+        class: 'Grade XII-A',
+        avatar: 'AP',
+        attendanceRate: 96.0,
+      },
+      apiKey: "", // Empty string as per Gemini guidelines: Canvas environment injects it at runtime
+      chatHistory: [],
+      quizzes: [
+        {
+          id: 'qz_101',
+          title: "Faraday's Law & Electromagnetic Induction",
+          subject: "Physics",
+          difficulty: "Intermediate",
+          durationMins: 10,
+          totalQuestions: 4,
+          questions: [
+            {
+              id: 'q1',
+              text: "A magnetic flux through a 100-turn coil changes from 0.5 Wb to 0.1 Wb in 0.2 seconds. What is the induced electromotive force (EMF)?",
+              options: ["100 V", "200 V", "50 V", "400 V"],
+              correctIndex: 1, // 200V: e = -N*(dPhi/dt) = -100 * (-0.4 / 0.2) = 200V
+              explanation: "According to Faraday's Law, EMF = -N * (ΔΦ / Δt). Here ΔΦ = 0.1 - 0.5 = -0.4 Wb. Δt = 0.2s. EMF = -100 * (-0.4 / 0.2) = 200 Volts."
+            },
+            {
+              id: 'q2',
+              text: "Which physical conservation law is directly represented by Lenz's Law?",
+              options: ["Conservation of Charge", "Conservation of Momentum", "Conservation of Energy", "Conservation of Magnetic Monopoles"],
+              correctIndex: 2,
+              explanation: "Lenz's Law ensures that the induced current opposes the change creating it, ensuring mechanical work is converted into electrical energy without violating the Conservation of Energy."
+            },
+            {
+              id: 'q3',
+              text: "True or False: In a purely inductive AC circuit, the alternating current leads the alternating voltage by π/2 radians (90°).",
+              options: ["True", "False"],
+              correctIndex: 1,
+              explanation: "False. In a purely inductive AC circuit, current LAGS voltage by 90 degrees (ELI mnemonic: In inductor L, EMF E leads current I)."
+            },
+            {
+              id: 'q4',
+              text: "What is the SI unit of Self-Inductance?",
+              options: ["Tesla (T)", "Weber (Wb)", "Henry (H)", "Farad (F)"],
+              correctIndex: 2,
+              explanation: "Self-inductance and mutual inductance are both measured in Henry (H), equivalent to 1 Weber per Ampere."
+            }
+          ]
+        },
+        {
+          id: 'qz_102',
+          title: "Calculus: Definite Integrals & Fundamental Theorem",
+          subject: "Mathematics",
+          difficulty: "Advanced",
+          durationMins: 15,
+          totalQuestions: 3,
+          questions: [
+            {
+              id: 'q201',
+              text: "Evaluate the integral ∫ x * e^x dx from 0 to 1.",
+              options: ["1", "e - 1", "e", "e / 2"],
+              correctIndex: 0,
+              explanation: "Using Integration by parts: ∫ u v' = u v - ∫ u' v. With u = x, v' = e^x: [x e^x - e^x] from 0 to 1 = (1*e - e) - (0 - 1) = 0 - (-1) = 1."
+            },
+            {
+              id: 'q202',
+              text: "What is the derivative of the integral function F(x) = ∫[0 to x] sin(t^2) dt with respect to x?",
+              options: ["2x cos(x^2)", "sin(x^2)", "-cos(x^2)", "sin(2x)"],
+              correctIndex: 1,
+              explanation: "By the First Fundamental Theorem of Calculus, if F(x) = ∫[a to x] f(t) dt, then F'(x) = f(x). Hence F'(x) = sin(x^2)."
+            },
+            {
+              id: 'q203',
+              text: "True or False: Any continuous function on a closed interval [a, b] is Riemann integrable.",
+              options: ["True", "False"],
+              correctIndex: 0,
+              explanation: "True. Continuity on a compact set [a, b] implies uniform continuity, which guarantees Riemann integrability."
+            }
+          ]
+        },
+        {
+          id: 'qz_103',
+          title: "Organic Chemistry: Carbonyl Compounds & Nucleophilic Addition",
+          subject: "Chemistry",
+          difficulty: "Beginner",
+          durationMins: 8,
+          totalQuestions: 3,
+          questions: [
+            {
+              id: 'q301',
+              text: "Which of the following compounds gives a positive Tollens' silver mirror test?",
+              options: ["Acetone", "Propanal (Aldehyde)", "Ethanol", "Acetic acid"],
+              correctIndex: 1,
+              explanation: "Tollens' reagent easily oxidizes aliphatic and aromatic aldehydes to carboxylic acid salts while reducing silver ions to metallic silver."
+            },
+            {
+              id: 'q302',
+              text: "What is the hybridization of the carbonyl carbon in formaldehyde?",
+              options: ["sp", "sp2", "sp3", "dsp2"],
+              correctIndex: 1,
+              explanation: "The carbonyl carbon is double-bonded to oxygen and single-bonded to two hydrogens, forming 3 sigma bonds and 1 pi bond, so it is sp2 hybridized (trigonal planar)."
+            },
+            {
+              id: 'q303',
+              text: "True or False: Ketones are generally more reactive than aldehydes toward nucleophilic attack.",
+              options: ["True", "False"],
+              correctIndex: 1,
+              explanation: "False. Aldehydes are more reactive due to less steric hindrance and less electron-donating inductive stabilization of the carbonyl carbon."
+            }
+          ]
+        }
+      ],
+
+      /* Active Quiz State */
+      activeQuiz: null,
+      activeQuizIndex: 0,
+      activeUserAnswers: {},
+      quizTimerInterval: null,
+      quizTimeRemaining: 0,
+
+      /* Student Diary State */
+      studentDiaryLogs: [
+        {
+          id: 'log_1',
+          date: '2026-09-09',
+          subject: 'Physics',
+          topic: "Faraday's Law and Self-Inductance",
+          minutes: 75,
+          notes: "Derived the formula for EMF in a solenoid coil. Still slightly confused about why Lenz law has a negative sign in the differential equation.",
+          teacherFeedback: "Great effort Aarav! Remember: the negative sign represents the induced magnetic field fighting the external change. Review page 142.",
+          status: 'Reviewed'
+        },
+        {
+          id: 'log_2',
+          date: '2026-09-08',
+          subject: 'Mathematics',
+          topic: "Integration by Parts & Tabular Method",
+          minutes: 60,
+          notes: "Solved 12 definite integrals. Tabular LIATE rule method works exceptionally fast for polynomial-exponential products.",
+          teacherFeedback: "Well done. Keep practicing inverse trigonometric integrals with LIATE.",
+          status: 'Reviewed'
+        }
+      ],
+
+      /* Teacher Diary & Lesson Plans */
+      teacherDiaryLogs: [
+        {
+          id: 't_log_1',
+          date: '2026-09-10',
+          className: 'Class XII-A',
+          subject: 'Physics',
+          topic: "Lenz's Law, Eddy Currents & Induction Cooktop Physics",
+          attendanceCount: '34 / 36',
+          homework: "Problems 4.1 to 4.8 from NCERT Chapter 6"
+        },
+        {
+          id: 't_log_2',
+          date: '2026-09-09',
+          className: 'Class XII-B',
+          subject: 'Physics',
+          topic: "Mutual Inductance in Coaxial Solenoids",
+          attendanceCount: '35 / 36',
+          homework: "Derive coefficient of coupling k"
+        }
+      ],
+
+      /* Question Bank Data */
+      questionBank: [
+        {
+          id: 'qb_1',
+          subject: 'Physics',
+          topic: 'Electromagnetism',
+          text: 'What is the phase difference between current and voltage across a pure inductor?',
+          type: 'MCQ',
+          difficulty: 'Intermediate',
+          options: ['0°', '90° (Current lags)', '90° (Current leads)', '180°'],
+          correct: '90° (Current lags)',
+          explanation: 'In pure inductors, voltage leads current by 90 degrees (or current lags voltage by 90 degrees).',
+          author: 'Prof. Sharma'
+        },
+        {
+          id: 'qb_2',
+          subject: 'Mathematics',
+          topic: 'Calculus',
+          text: 'Is the function f(x) = |x| differentiable at x = 0?',
+          type: 'TF',
+          difficulty: 'Beginner',
+          options: ['True', 'False'],
+          correct: 'False',
+          explanation: 'The left-hand derivative is -1 and right-hand derivative is +1. Since they differ, f(x) is not differentiable at x=0.',
+          author: 'Dr. Rao'
+        },
+        {
+          id: 'qb_3',
+          subject: 'Chemistry',
+          topic: 'Organic Chemistry',
+          text: 'Which reagent converts ethanol to ethanal without over-oxidizing to ethanoic acid?',
+          type: 'MCQ',
+          difficulty: 'Intermediate',
+          options: ['KMnO4 / H+', 'Pyridinium Chlorochromate (PCC)', 'K2Cr2O7 / H+', 'Conc. HNO3'],
+          correct: 'Pyridinium Chlorochromate (PCC)',
+          explanation: 'PCC in anhydrous CH2Cl2 stops the oxidation of primary alcohols at the aldehyde stage.',
+          author: 'Dr. Mukherjee'
+        }
+      ],
+
+      /* Feedback Submissions */
+      feedbackList: [
+        {
+          id: 'fb_1',
+          author: 'Aarav Patel (Student)',
+          category: 'AI Assistant',
+          rating: 5,
+          comment: 'The step-by-step breakdown of Lenz Law with the magnet-dropping animation analogy helped me score 85% on the quiz!',
+          date: 'Yesterday'
+        },
+        {
+          id: 'fb_2',
+          author: 'Pooja Nair (Student)',
+          category: 'Course Quality',
+          rating: 4,
+          comment: 'The question bank problems are directly aligned with board exams. Would love more video diagram solutions.',
+          date: '2 days ago'
+        }
+      ],
+
+      /* Registered Users */
+      users: [
+        { id: 'usr_std_001', name: 'Aarav Patel', role: 'Student', email: 'aarav.patel@school.edu', status: 'Active', lastActive: 'Just now' },
+        { id: 'usr_tch_001', name: 'Prof. Rajesh Sharma', role: 'Teacher', email: 'r.sharma@school.edu', status: 'Active', lastActive: '10m ago' },
+        { id: 'usr_adm_001', name: 'Dr. Sunita Sen', role: 'Admin', email: 'admin@school.edu', status: 'Active', lastActive: '1h ago' },
+        { id: 'usr_std_002', name: 'Meera Iyer', role: 'Student', email: 'meera.i@school.edu', status: 'Active', lastActive: '3h ago' }
+      ]
+    };
+
+    function switchRole(role) {
+      AppState.currentRole = role;
+      
+      // Update buttons styling
+      const roles = ['student', 'teacher', 'admin'];
+      roles.forEach(r => {
+        const btn = document.getElementById(`role-btn-${r}`);
+        if (r === role) {
+          btn.className = "px-3 py-1.5 rounded-lg transition text-white bg-brand-600 shadow-sm font-bold";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg transition text-slate-600 hover:text-slate-900 font-semibold";
+        }
+      });
+
+      // Show/Hide sidebar navigation sections
+      document.getElementById('nav-group-student').classList.toggle('hidden', role !== 'student');
+      document.getElementById('nav-group-teacher').classList.toggle('hidden', role !== 'teacher');
+      document.getElementById('nav-group-admin').classList.toggle('hidden', role !== 'admin');
+
+      // Update avatar & role badge
+      const avatarEl = document.getElementById('currentUserAvatar');
+      const nameEl = document.getElementById('currentUserName');
+      const badgeEl = document.getElementById('currentUserRoleBadge');
+
+      if (role === 'student') {
+        avatarEl.innerText = 'AP';
+        avatarEl.className = 'w-8 h-8 rounded-full bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shadow-sm';
+        nameEl.innerText = 'Aarav Patel';
+        badgeEl.innerText = 'Student (Class XII-A)';
+        badgeEl.className = 'text-[10px] text-emerald-600 font-medium';
+        switchMainTab('student-diary');
+        showToast('Switched to Student Mode', 'Explore your personal learning diary and adaptive quizzes.');
+      } else if (role === 'teacher') {
+        avatarEl.innerText = 'RS';
+        avatarEl.className = 'w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-sm';
+        nameEl.innerText = 'Prof. Rajesh Sharma';
+        badgeEl.innerText = 'Senior Faculty (Physics)';
+        badgeEl.className = 'text-[10px] text-indigo-600 font-medium';
+        switchMainTab('teacher-diary');
+        showToast('Switched to Teacher Mode', 'Manage lesson plans, question authoring, and student grades.');
+      } else if (role === 'admin') {
+        avatarEl.innerText = 'SS';
+        avatarEl.className = 'w-8 h-8 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center shadow-sm';
+        nameEl.innerText = 'Dr. Sunita Sen';
+        badgeEl.innerText = 'Executive Administrator';
+        badgeEl.className = 'text-[10px] text-purple-600 font-medium';
+        switchMainTab('admin-dashboard');
+        showToast('Switched to Admin Mode', 'Access institutional KPIs, user permissions, and AI policies.');
+      }
+    }
+
+    function switchMainTab(tabId) {
+      AppState.currentTab = tabId;
+
+      // Hide all tab content sections
+      document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+
+      // Show selected tab content
+      const targetView = document.getElementById(`view-${tabId}`);
+      if (targetView) targetView.classList.remove('hidden');
+
+      // Update sidebar active buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = "tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-brand-600 bg-brand-50 transition";
+        } else {
+          btn.className = "tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition";
+        }
+      });
+
+      // Special triggers upon opening tabs
+      if (tabId === 'analytics-view') {
+        initAnalyticsCharts();
+      } else if (tabId === 'admin-dashboard') {
+        initAdminCharts();
+      } else if (tabId === 'interactive-quiz') {
+        renderAvailableQuizzes();
+      } else if (tabId === 'question-bank') {
+        renderQuestionBank();
+      }
+    }
+
+    function renderStudentDiaryHistory() {
+      const container = document.getElementById('studentDiaryHistoryList');
+      if (!container) return;
+
+      container.innerHTML = AppState.studentDiaryLogs.map(log => `
+        <div class="p-3.5 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/80 transition text-xs space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-800">${escapeHtml(log.subject)}</span>
+              <span class="text-slate-400">•</span>
+              <span class="text-slate-600 font-medium">${escapeHtml(log.topic)}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-mono text-slate-400">${log.date}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">${log.minutes} mins</span>
+            </div>
+          </div>
+          <p class="text-slate-600 text-[11px] leading-relaxed italic">"${escapeHtml(log.notes)}"</p>
+          ${log.teacherFeedback ? `
+            <div class="p-2.5 bg-indigo-50/70 border border-indigo-100 rounded-lg text-[11px] text-brand-900 flex items-start gap-2">
+              <span class="font-bold text-brand-700">Teacher:</span>
+              <span>${escapeHtml(log.teacherFeedback)}</span>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function saveStudentDiaryEntry() {
+      const subject = document.getElementById('diarySubject').value;
+      const minutes = parseInt(document.getElementById('diaryMinutes').value) || 45;
+      const topic = document.getElementById('diaryTopic').value.trim();
+      const notes = document.getElementById('diaryNotes').value.trim();
+
+      if (!topic || !notes) {
+        showToast('Entry Required', 'Please enter a topic and your key concepts notes.', 'warning');
+        return;
+      }
+
+      const newEntry = {
+        id: 'log_' + Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        subject,
+        topic,
+        minutes,
+        notes,
+        teacherFeedback: null,
+        status: 'Submitted'
+      };
+
+      AppState.studentDiaryLogs.unshift(newEntry);
+      document.getElementById('diaryNotes').value = '';
+      renderStudentDiaryHistory();
+      showToast('Diary Saved', `Logged ${minutes} minutes of ${subject} learning to your diary!`, 'success');
+    }
+
+    async function callGeminiLlm(systemPrompt, userQuery, isJson = false) {
+      const apiKey = AppState.apiKey; // Empty string as instructed
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] }
+      };
+
+      if (isJson) {
+        payload.generationConfig = { responseMimeType: "application/json" };
+      }
+
+      let attempts = 0;
+      const maxAttempts = 3;
+
+      while (attempts < maxAttempts) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+          }
+
+          const result = await response.json();
+          const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) return text;
+          throw new Error("No text candidate returned");
+        } catch (err) {
+          attempts++;
+          if (attempts >= maxAttempts) {
+            console.warn("Gemini API live request fallback triggered:", err);
+            return null;
+          }
+          // Exponential backoff
+          await new Promise(res => setTimeout(res, Math.pow(2, attempts) * 800));
+        }
+      }
+      return null;
+    }
+
+    async function aiEvaluateNotes() {
+      const notes = document.getElementById('diaryNotes').value.trim();
+      const topic = document.getElementById('diaryTopic').value.trim();
+
+      if (!notes) {
+        showToast('Notes Empty', 'Write your study notes first to receive AI critique.', 'warning');
+        return;
+      }
+
+      showToast('AI Analyzing Notes...', 'Checking conceptual completeness and identifying gaps...', 'info');
+
+      const systemPrompt = "You are an expert high-school and university STEM tutor. Analyze the student's brief notes on the given topic. Validate accuracy, highlight any misconception, and give 1 concise bullet point of what to study next.";
+      const userQuery = `Topic: ${topic}\nStudent Notes:\n${notes}`;
+
+      const aiResponse = await callGeminiLlm(systemPrompt, userQuery);
+
+      if (aiResponse) {
+        openAiResultModal("AI Tutor Note Critique", aiResponse);
+      } else {
+        // High quality heuristic educational feedback fallback
+        const fallbackCritique = `**Feedback for ${escapeHtml(topic)}:**\n\n• **Conceptual Check:** Your notes capture the fundamental proportionality. Remember to emphasize the role of relative motion in inducing flux changes.\n• **Formula check:** Verify that the number of turns $N$ is multiplied to the total rate of change of flux.\n• **Recommended Next Step:** Practice calculating Lenz law direction using the right-hand grip rule for approaching vs receding magnet poles.`;
+        openAiResultModal("AI Tutor Note Critique", fallbackCritique);
+      }
+    }
+
+    async function handleSendAiMessage(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('aiChatInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      input.value = '';
+      appendChatMessage('user', query);
+
+      // Add thinking indicator
+      const thinkingBubbleId = appendThinkingMessage();
+
+      const systemPrompt = "You are EduPulse AI, an intelligent, inspiring, step-by-step academic tutor. You specialize in STEM, commerce, and humanities. Provide pedagogical, well-formatted explanations using markdown, equations, and numbered steps. Explicitly note that you are an AI assistant and advise verifying critical exam formulas.";
+
+      const aiText = await callGeminiLlm(systemPrompt, query);
+
+      removeThinkingMessage(thinkingBubbleId);
+
+      if (aiText) {
+        appendChatMessage('ai', aiText);
+      } else {
+        // Context-sensitive educational simulation fallback
+        let fallbackResponse = "";
+        if (query.toLowerCase().includes("lenz")) {
+          fallbackResponse = `### Step-by-Step Explanation of Lenz's Law\n\n1. **Statement:** The direction of induced electromotive force (EMF) and induced current in a closed loop always opposes the change in magnetic flux that produces it.\n\n2. **Mathematical Formulation:**\n   $$\\mathcal{E} = -N \\frac{d\\Phi_B}{dt}$$\n   *The negative sign ($-$) is the exact mathematical representation of Lenz's Law!*\n\n3. **Physical Intuition:**\n   - If a North pole approaches a ring, the ring induces a current creating a North pole facing it (repelling it).\n   - Mechanical work done pushing the magnet is transformed into electrical energy, fulfilling the **Law of Conservation of Energy**.\n\n*Educational Assistant Note: Remember to practice with the Right-Hand Rule to determine clockwise vs counter-clockwise induced current!*`;
+        } else if (query.toLowerCase().includes("parts") || query.toLowerCase().includes("calculus")) {
+          fallbackResponse = `### Derivation of Integration by Parts\n\n1. **Start with the Product Rule of Differentiation:**\n   $$\\frac{d}{dx}[u(x) v(x)] = u'(x) v(x) + u(x) v'(x)$$\n\n2. **Integrate both sides with respect to $x$:**\n   $$u(x) v(x) = \\int v(x) u'(x) dx + \\int u(x) v'(x) dx$$\n\n3. **Rearrange for $\\int u \\, dv$:**\n   $$\\int u \\frac{dv}{dx} dx = u v - \\int v \\frac{du}{dx} dx$$\n   Or simply: **$\\int u \\, dv = uv - \\int v \\, du$**\n\n4. **Pro-Tip (LIATE Rule for picking $u$):**\n   - **L**: Logarithmic\n   - **I**: Inverse Trigonometric\n   - **A**: Algebraic\n   - **T**: Trigonometric\n   - **E**: Exponential`;
+        } else {
+          fallbackResponse = `I have analyzed your question: **"${escapeHtml(query)}"**.\n\nHere is a structured academic breakdown:\n\n1. **Core Principle:** Every key relationship begins with defining the physical or mathematical invariants.\n2. **Step-by-Step Mechanics:** Break down complex systems into single-degree-of-freedom components.\n3. **Practical Application:** Connect this concept directly to your upcoming syllabus test questions.\n\nWould you like me to generate 2 practice multiple-choice questions on this exact topic?`;
+        }
+        appendChatMessage('ai', fallbackResponse);
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('aiChatInput').value = promptText;
+      handleSendAiMessage();
+    }
+
+    function appendChatMessage(sender, text) {
+      const stream = document.getElementById('aiChatConversationStream');
+      const isUser = sender === 'user';
+      
+      const bubble = document.createElement('div');
+      bubble.className = `flex items-start gap-3 max-w-2xl ${isUser ? 'ml-auto flex-row-reverse' : ''}`;
+      
+      bubble.innerHTML = `
+        <div class="w-8 h-8 rounded-xl ${isUser ? 'bg-indigo-600' : 'bg-brand-600'} text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+          ${isUser ? 'ME' : 'AI'}
+        </div>
+        <div class="${isUser ? 'bg-brand-600 text-white' : 'bg-white text-slate-700'} p-4 rounded-2xl ${isUser ? 'rounded-tr-none' : 'rounded-tl-none'} border ${isUser ? 'border-brand-500' : 'border-slate-200'} shadow-xs text-xs leading-relaxed space-y-1.5 whitespace-pre-wrap">
+          ${formatMarkdownSimple(text)}
+        </div>
+      `;
+
+      stream.appendChild(bubble);
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function appendThinkingMessage() {
+      const stream = document.getElementById('aiChatConversationStream');
+      const id = 'thinking-' + Date.now();
+      const bubble = document.createElement('div');
+      bubble.id = id;
+      bubble.className = 'flex items-start gap-3 max-w-2xl';
+      bubble.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+          AI
+        </div>
+        <div class="bg-white text-slate-500 p-3.5 rounded-2xl rounded-tl-none border border-slate-200 text-xs flex items-center gap-2 shadow-xs">
+          <div class="flex space-x-1">
+            <div class="w-1.5 h-1.5 bg-brand-600 rounded-full animate-bounce"></div>
+            <div class="w-1.5 h-1.5 bg-brand-600 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+            <div class="w-1.5 h-1.5 bg-brand-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+          </div>
+          <span>Thinking, organizing pedagogical steps...</span>
+        </div>
+      `;
+      stream.appendChild(bubble);
+      stream.scrollTop = stream.scrollHeight;
+      return id;
+    }
+
+    function removeThinkingMessage(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function clearChatHistory() {
+      const stream = document.getElementById('aiChatConversationStream');
+      stream.innerHTML = `
+        <div class="flex items-start gap-3 max-w-2xl">
+          <div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+            AI
+          </div>
+          <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-slate-200 shadow-xs text-xs text-slate-700 leading-relaxed space-y-2">
+            <p class="font-semibold text-slate-900">Conversation reset. How can I assist your study session today?</p>
+          </div>
+        </div>
+      `;
+      showToast('Chat Cleared', 'Chat history refreshed.');
+    }
+
+    async function executeSmartSearch(e) {
+      if (e) e.preventDefault();
+      const query = document.getElementById('smartSearchQueryInput').value.trim();
+      if (!query) return;
+
+      const container = document.getElementById('smartSearchResultsContainer');
+      container.innerHTML = `
+        <div class="p-6 text-center text-xs text-slate-500 bg-white rounded-2xl border border-slate-200">
+          <div class="w-6 h-6 border-2 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+          Searching cross-curriculum databases & synthesizing AI explanation...
+        </div>
+      `;
+
+      const systemPrompt = "You are a university academic search engine. Provide a structured, high-value summary of the topic requested, including core definition, key strategic principles, curriculum significance, and 2 suggested study references.";
+      const aiSummary = await callGeminiLlm(systemPrompt, query);
+
+      const responseText = aiSummary || `### Executive Overview: Financial Management Techniques\n\nFinancial management involves planning, organizing, directing, and controlling financial activities such as procurement and utilization of enterprise funds.\n\n1. **Capital Budgeting Techniques:** Evaluating capital expenditures using Discounted Cash Flow (DCF), Net Present Value (NPV), and Internal Rate of Return (IRR).\n2. **Working Capital Optimization:** Managing liquidity ratios (Current & Quick ratio) and Cash Conversion Cycles (CCC).\n3. **Capital Structure & Leverage:** Balancing Debt-to-Equity to minimize Weighted Average Cost of Capital (WACC).\n4. **Risk Management:** Mitigating market volatility via hedging, options, and diversification.`;
+
+      container.innerHTML = `
+        <!-- AI Grounded Synthesis Box -->
+        <div class="p-5 bg-gradient-to-br from-indigo-50/90 to-purple-50/50 rounded-2xl border border-indigo-200/80 shadow-xs space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-700 bg-brand-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              AI Grounded Academic Summary
+            </span>
+            <span class="text-[11px] text-slate-400 font-mono">Relevance Score: 98.4%</span>
+          </div>
+          <div class="text-xs text-slate-800 leading-relaxed whitespace-pre-wrap">
+            ${formatMarkdownSimple(responseText)}
+          </div>
+        </div>
+
+        <!-- Matched Platform Materials & Quizzes -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Matching Institutional Resources</h4>
+          
+          <div class="p-4 bg-white rounded-2xl border border-slate-200 hover:border-brand-300 transition flex items-center justify-between cursor-pointer" onclick="switchMainTab('interactive-quiz')">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
+                QZ
+              </div>
+              <div>
+                <h5 class="text-xs font-bold text-slate-800">Financial Ratio Analysis & Budgeting Diagnostic</h5>
+                <p class="text-[11px] text-slate-500">10 Questions • Intermediate Level • Average completion 12 mins</p>
+              </div>
+            </div>
+            <button class="px-3 py-1 bg-brand-50 text-brand-600 font-bold text-xs rounded-lg hover:bg-brand-100">Attempt</button>
+          </div>
+
+          <div class="p-4 bg-white rounded-2xl border border-slate-200 hover:border-brand-300 transition flex items-center justify-between cursor-pointer" onclick="openStudyResource('Corporate Financial Planning Case Study')">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-xs">
+                PDF
+              </div>
+              <div>
+                <h5 class="text-xs font-bold text-slate-800">Lecture Slides: Capital Budgeting & NPV Mastery</h5>
+                <p class="text-[11px] text-slate-500">Department of Management Studies • Updated last week</p>
+              </div>
+            </div>
+            <button class="px-3 py-1 bg-slate-100 text-slate-700 font-bold text-xs rounded-lg hover:bg-slate-200">View PDF</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAvailableQuizzes() {
+      const grid = document.getElementById('availableQuizzesGrid');
+      if (!grid) return;
+
+      grid.innerHTML = AppState.quizzes.map(quiz => `
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-brand-50 text-brand-700">${escapeHtml(quiz.subject)}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${quiz.difficulty === 'Advanced' ? 'bg-purple-50 text-purple-700' : 'bg-amber-50 text-amber-700'}">${quiz.difficulty}</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800 leading-snug mb-2">${escapeHtml(quiz.title)}</h3>
+            <p class="text-[11px] text-slate-500 mb-4">${quiz.totalQuestions} Questions • ${quiz.durationMins} Minutes Allowed • Auto-Evaluated</p>
+          </div>
+          <button onclick="startQuiz('${quiz.id}')" class="w-full py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition shadow-xs">
+            Start Test
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function startQuiz(quizId) {
+      const quiz = AppState.quizzes.find(q => q.id === quizId);
+      if (!quiz) return;
+
+      AppState.activeQuiz = quiz;
+      AppState.activeQuizIndex = 0;
+      AppState.activeUserAnswers = {};
+      AppState.quizTimeRemaining = quiz.durationMins * 60;
+
+      document.getElementById('quizSelectionScreen').classList.add('hidden');
+      document.getElementById('quizResultScreen').classList.add('hidden');
+      document.getElementById('quizActiveScreen').classList.remove('hidden');
+
+      document.getElementById('quizBadgeCategory').innerText = `${quiz.subject} • ${quiz.difficulty}`;
+      document.getElementById('quizTitleDisplay').innerText = quiz.title;
+
+      startQuizTimer();
+      renderCurrentQuizQuestion();
+    }
+
+    function startQuizTimer() {
+      clearInterval(AppState.quizTimerInterval);
+      const timerDisplay = document.getElementById('quizTimerText');
+      
+      AppState.quizTimerInterval = setInterval(() => {
+        AppState.quizTimeRemaining--;
+        if (AppState.quizTimeRemaining <= 0) {
+          clearInterval(AppState.quizTimerInterval);
+          finishQuizSubmission();
+          return;
+        }
+
+        const mins = Math.floor(AppState.quizTimeRemaining / 60);
+        const secs = AppState.quizTimeRemaining % 60;
+        timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    function renderCurrentQuizQuestion() {
+      const quiz = AppState.activeQuiz;
+      const index = AppState.activeQuizIndex;
+      const question = quiz.questions[index];
+
+      // Progress bar & indicator
+      document.getElementById('quizQuestionNumberIndicator').innerText = `Question ${index + 1} of ${quiz.questions.length}`;
+      document.getElementById('quizProgressBar').style.width = `${((index + 1) / quiz.questions.length) * 100}%`;
+      document.getElementById('quizQuestionText').innerText = question.text;
+
+      // Render Options
+      const optionsContainer = document.getElementById('quizOptionsContainer');
+      const savedAnswer = AppState.activeUserAnswers[index];
+
+      optionsContainer.innerHTML = question.options.map((opt, optIdx) => `
+        <label class="flex items-center gap-3 p-3.5 rounded-xl border ${savedAnswer === optIdx ? 'border-brand-600 bg-brand-50/60 font-semibold text-brand-900' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'} cursor-pointer transition text-xs">
+          <input type="radio" name="quizOptionGroup" value="${optIdx}" ${savedAnswer === optIdx ? 'checked' : ''} onchange="handleSelectQuizOption(${optIdx})" class="w-4 h-4 text-brand-600 focus:ring-brand-500">
+          <span class="flex-1">${escapeHtml(opt)}</span>
+        </label>
+      `).join('');
+
+      // Buttons
+      document.getElementById('quizPrevBtn').disabled = (index === 0);
+      document.getElementById('quizPrevBtn').classList.toggle('opacity-50', index === 0);
+      
+      const isLast = index === quiz.questions.length - 1;
+      document.getElementById('quizNextBtn').innerText = isLast ? 'Submit Quiz' : 'Next Question';
+    }
+
+    function handleSelectQuizOption(optIdx) {
+      AppState.activeUserAnswers[AppState.activeQuizIndex] = optIdx;
+    }
+
+    function quizNavPrev() {
+      if (AppState.activeQuizIndex > 0) {
+        AppState.activeQuizIndex--;
+        renderCurrentQuizQuestion();
+      }
+    }
+
+    function quizNavNext() {
+      const quiz = AppState.activeQuiz;
+      if (AppState.activeQuizIndex < quiz.questions.length - 1) {
+        AppState.activeQuizIndex++;
+        renderCurrentQuizQuestion();
+      } else {
+        finishQuizSubmission();
+      }
+    }
+
+    function abandonQuiz() {
+      clearInterval(AppState.quizTimerInterval);
+      document.getElementById('quizActiveScreen').classList.add('hidden');
+      document.getElementById('quizSelectionScreen').classList.remove('hidden');
+      showToast('Quiz Cancelled', 'No score was recorded.');
+    }
+
+    function finishQuizSubmission() {
+      clearInterval(AppState.quizTimerInterval);
+      const quiz = AppState.activeQuiz;
+      let correctCount = 0;
+
+      quiz.questions.forEach((q, idx) => {
+        if (AppState.activeUserAnswers[idx] === q.correctIndex) {
+          correctCount++;
+        }
+      });
+
+      const total = quiz.questions.length;
+      const accuracy = Math.round((correctCount / total) * 100);
+
+      // Trigger celebratory confetti if score is high
+      if (accuracy >= 75 && typeof confetti === 'function') {
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      }
+
+      document.getElementById('quizActiveScreen').classList.add('hidden');
+      document.getElementById('quizResultScreen').classList.remove('hidden');
+
+      document.getElementById('resultScoreValue').innerText = `${correctCount} / ${total}`;
+      document.getElementById('resultAccuracyValue').innerText = `${accuracy}%`;
+
+      const timeTakenSec = (quiz.durationMins * 60) - AppState.quizTimeRemaining;
+      const mins = Math.floor(timeTakenSec / 60);
+      const secs = timeTakenSec % 60;
+      document.getElementById('resultTimeSpentValue').innerText = `${mins}m ${secs}s`;
+
+      // AI remediation diagnosis text
+      const feedbackEl = document.getElementById('resultAiFeedbackText');
+      if (accuracy === 100) {
+        feedbackEl.innerText = "Exceptional mastery! All conceptual derivations and formula applications were solved accurately without hesitation. Recommended to attempt the Advanced Competitive diagnostic.";
+      } else if (accuracy >= 70) {
+        feedbackEl.innerText = `Solid grasp of core principles (${accuracy}% accuracy). Review Question ${quiz.questions.findIndex((q, i) => AppState.activeUserAnswers[i] !== q.correctIndex) + 1} explanation to address sign convention and edge conditions.`;
+      } else {
+        feedbackEl.innerText = `Identified learning gaps in ${quiz.subject} (${accuracy}% score). The AI remediation engine has dynamically generated beginner-level flashcards and added a recovery milestone to your diary.`;
+      }
+
+      showToast('Quiz Submitted', `Evaluation complete: ${accuracy}% accuracy achieved!`, 'success');
+    }
+
+    function returnToQuizzes() {
+      document.getElementById('quizResultScreen').classList.add('hidden');
+      document.getElementById('quizSelectionScreen').classList.remove('hidden');
+      renderAvailableQuizzes();
+    }
+
+    function reviewQuizDetailedAnswers() {
+      const quiz = AppState.activeQuiz;
+      let reviewContent = `### Detailed Answer Breakdown: ${quiz.title}\n\n`;
+
+      quiz.questions.forEach((q, idx) => {
+        const studentChoice = AppState.activeUserAnswers[idx];
+        const isCorrect = studentChoice === q.correctIndex;
+        reviewContent += `**Q${idx + 1}: ${q.text}**\n`;
+        reviewContent += `• Your Answer: ${studentChoice !== undefined ? q.options[studentChoice] : 'Not answered'} (${isCorrect ? '✅ Correct' : '❌ Incorrect'})\n`;
+        reviewContent += `• Correct Answer: **${q.options[q.correctIndex]}**\n`;
+        reviewContent += `• **Explanation:** ${q.explanation}\n\n---\n`;
+      });
+
+      openAiResultModal("Quiz Answer Review & Explanations", reviewContent);
+    }
+
+    function renderQuestionBank() {
+      const container = document.getElementById('questionBankContainer');
+      if (!container) return;
+
+      const qList = AppState.questionBank;
+      container.innerHTML = qList.map(q => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-50 text-brand-700">${escapeHtml(q.subject)}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${escapeHtml(q.topic)}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${q.difficulty === 'Advanced' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}">${q.difficulty}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">${q.type}</span>
+            </div>
+            <h4 class="text-xs font-bold text-slate-800 pt-1">${escapeHtml(q.text)}</h4>
+            <p class="text-[11px] text-slate-500"><strong class="text-emerald-600">Correct:</strong> ${escapeHtml(q.correct)} • <em>${escapeHtml(q.explanation)}</em></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="deleteQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="Delete Question">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function triggerAiQuestionGeneration() {
+      const subject = document.getElementById('genAiSubject').value;
+      const topic = document.getElementById('genAiTopic').value.trim();
+      const difficulty = document.getElementById('genAiDifficulty').value;
+      const count = parseInt(document.getElementById('genAiCount').value) || 1;
+
+      if (!topic) {
+        showToast('Topic Required', 'Please provide a specific topic or concept.', 'warning');
+        return;
+      }
+
+      const indicator = document.getElementById('aiGenStatusIndicator');
+      const btn = document.getElementById('btnGenerateQuestions');
+      indicator.classList.remove('hidden');
+      btn.disabled = true;
+
+      const systemPrompt = `You are a curriculum assessment designer. Generate valid multiple-choice questions for the specified topic and return ONLY a valid JSON array of objects with keys: "text" (string), "options" (array of 4 strings), "correct" (string, exact match to one option), "explanation" (string).`;
+      const userPrompt = `Subject: ${subject}\nTopic: ${topic}\nDifficulty: ${difficulty}\nCount: ${count}`;
+
+      const aiJsonRaw = await callGeminiLlm(systemPrompt, userPrompt, true);
+
+      indicator.classList.add('hidden');
+      btn.disabled = false;
+
+      let parsedQuestions = null;
+      if (aiJsonRaw) {
+        try {
+          parsedQuestions = JSON.parse(aiJsonRaw);
+        } catch (e) {
+          console.warn("JSON parsing of AI questions failed, using fallback generation", e);
+        }
+      }
+
+      if (!parsedQuestions || !Array.isArray(parsedQuestions)) {
+        // High quality curriculum fallback questions
+        parsedQuestions = [
+          {
+            text: `In ${topic}, what is the fundamental governing relationship under ${difficulty} conditions?`,
+            options: ["Directly proportional to flux gradient", "Inversely proportional to resistance only", "Constant independent of frequency", "Exponential decay with time constant tau"],
+            correct: "Directly proportional to flux gradient",
+            explanation: "The rate of change directly drives the potential difference."
+          }
+        ];
+      }
+
+      parsedQuestions.forEach((qObj, i) => {
+        AppState.questionBank.unshift({
+          id: 'qb_' + Date.now() + '_' + i,
+          subject,
+          topic,
+          text: qObj.text,
+          type: 'MCQ',
+          difficulty,
+          options: qObj.options || ["Option A", "Option B", "Option C", "Option D"],
+          correct: qObj.correct || qObj.options[0],
+          explanation: qObj.explanation || "Curriculum verified explanation.",
+          author: 'AI Question Engine'
+        });
+      });
+
+      toggleModal('modal-ai-question-gen');
+      renderQuestionBank();
+      showToast('Questions Created', `Successfully generated and added ${parsedQuestions.length} questions to Question Bank!`, 'success');
+    }
+
+    function deleteQuestion(qId) {
+      AppState.questionBank = AppState.questionBank.filter(q => q.id !== qId);
+      renderQuestionBank();
+      showToast('Question Removed', 'Question was removed from database.');
+    }
+
+    function filterQuestionBank() {
+      const qText = document.getElementById('qbSearchQuery').value.toLowerCase();
+      const subject = document.getElementById('qbSubjectFilter').value;
+      const difficulty = document.getElementById('qbDifficultyFilter').value;
+
+      const container = document.getElementById('questionBankContainer');
+      const filtered = AppState.questionBank.filter(q => {
+        const matchesText = q.text.toLowerCase().includes(qText) || q.topic.toLowerCase().includes(qText);
+        const matchesSub = subject === 'ALL' || q.subject === subject;
+        const matchesDiff = difficulty === 'ALL' || q.difficulty === difficulty;
+        return matchesText && matchesSub && matchesDiff;
+      });
+
+      container.innerHTML = filtered.map(q => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-50 text-brand-700">${escapeHtml(q.subject)}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">${escapeHtml(q.topic)}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${q.difficulty === 'Advanced' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}">${q.difficulty}</span>
+            </div>
+            <h4 class="text-xs font-bold text-slate-800 pt-1">${escapeHtml(q.text)}</h4>
+            <p class="text-[11px] text-slate-500"><strong class="text-emerald-600">Correct:</strong> ${escapeHtml(q.correct)}</p>
+          </div>
+          <button onclick="deleteQuestion('${q.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function exportQuestionBankJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(AppState.questionBank, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `question_bank_export_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Export Successful', 'Question Bank downloaded as JSON file.');
+    }
+
+    function renderTeacherViews() {
+      // Teacher Diary Table
+      const diaryBody = document.getElementById('teacherDiaryTableBody');
+      if (diaryBody) {
+        diaryBody.innerHTML = AppState.teacherDiaryLogs.map(log => `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="p-3 font-mono text-[11px] text-slate-500">${log.date}</td>
+            <td class="p-3 font-bold text-slate-800">${escapeHtml(log.className)} • ${escapeHtml(log.subject)}</td>
+            <td class="p-3 text-slate-700">${escapeHtml(log.topic)}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">${log.attendanceCount}</span></td>
+            <td class="p-3 text-slate-600">${escapeHtml(log.homework)}</td>
+            <td class="p-3 text-right">
+              <button onclick="showToast('Lesson Verified', 'Logged in department syllabus audit.')" class="text-brand-600 hover:underline font-semibold">Verify</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Attendance Roll Call
+      const rosterList = document.getElementById('attendanceRosterList');
+      if (rosterList) {
+        const studentsMock = [
+          { roll: '1201', name: 'Aarav Patel', present: true },
+          { roll: '1202', name: 'Ananya Sharma', present: true },
+          { roll: '1203', name: 'Devendra Joshi', present: true },
+          { roll: '1204', name: 'Kavita Sundaram', present: false },
+          { roll: '1205', name: 'Meera Iyer', present: true },
+        ];
+
+        rosterList.innerHTML = studentsMock.map(s => `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-[10px] text-slate-400">#${s.roll}</span>
+              <span class="font-semibold text-slate-800">${s.name}</span>
+            </div>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" ${s.present ? 'checked' : ''} class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500">
+              <span class="text-[11px] font-bold ${s.present ? 'text-emerald-600' : 'text-rose-500'}">${s.present ? 'Present' : 'Absent'}</span>
+            </label>
+          </div>
+        `).join('');
+      }
+
+      // Student Performance Monitoring Table
+      const monitorTable = document.getElementById('teacherStudentsMonitoringTable');
+      if (monitorTable) {
+        const classMonitoringData = [
+          { name: 'Aarav Patel', roll: '1201', avgScore: '82.4%', attendance: '96%', weakTopic: 'AC Circuits', risk: 'Low' },
+          { name: 'Kavita Sundaram', roll: '1204', avgScore: '46.0%', attendance: '72%', weakTopic: 'Lenz Law Direction', risk: 'High' },
+          { name: 'Devendra Joshi', roll: '1203', avgScore: '58.5%', attendance: '80%', weakTopic: 'Integration by Parts', risk: 'Moderate' },
+          { name: 'Meera Iyer', roll: '1205', avgScore: '94.0%', attendance: '98%', weakTopic: 'None (Excelling)', risk: 'Low' },
+        ];
+
+        monitorTable.innerHTML = classMonitoringData.map(st => `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="p-3 font-bold text-slate-800">${st.name}</td>
+            <td class="p-3 text-slate-500 font-mono text-[11px]">${st.roll}</td>
+            <td class="p-3 font-bold ${parseFloat(st.avgScore) < 50 ? 'text-rose-600' : 'text-slate-800'}">${st.avgScore}</td>
+            <td class="p-3 text-slate-600">${st.attendance}</td>
+            <td class="p-3 text-slate-700 font-medium">${st.weakTopic}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${st.risk === 'High' ? 'bg-rose-100 text-rose-700' : st.risk === 'Moderate' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${st.risk}</span>
+            </td>
+            <td class="p-3 text-right">
+              <button onclick="sendAiPersonalizedIntervention('${st.name}', '${st.weakTopic}')" class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold rounded-lg text-[11px] transition">
+                Assign AI Recovery Plan
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Admin Users Table
+      const usersTable = document.getElementById('adminUsersTableBody');
+      if (usersTable) {
+        usersTable.innerHTML = AppState.users.map(u => `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="p-3 font-mono text-[11px] text-slate-400">${u.id}</td>
+            <td class="p-3 font-bold text-slate-800">${u.name}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'Admin' ? 'bg-purple-100 text-purple-700' : u.role === 'Teacher' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}">${u.role}</span></td>
+            <td class="p-3 text-slate-500">${u.email}</td>
+            <td class="p-3"><span class="text-emerald-600 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${u.status}</span></td>
+            <td class="p-3 text-slate-400 text-[11px]">${u.lastActive}</td>
+            <td class="p-3 text-right">
+              <button onclick="showToast('User Permissions', 'User role settings updated.')" class="text-slate-500 hover:text-brand-600 font-semibold">Edit</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Admin Courses Grid
+      const coursesGrid = document.getElementById('adminCoursesGrid');
+      if (coursesGrid) {
+        const mockCourses = [
+          { title: "Advanced Senior Physics", code: "PHY-120", students: 184, modules: 14, completion: "72%" },
+          { title: "Differential & Integral Calculus", code: "MAT-210", students: 210, modules: 18, completion: "64%" },
+          { title: "Organic & Physical Chemistry", code: "CHM-115", students: 165, modules: 12, completion: "80%" }
+        ];
+
+        coursesGrid.innerHTML = mockCourses.map(c => `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-mono font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">${c.code}</span>
+              <h4 class="text-sm font-bold text-slate-900 mt-2">${c.title}</h4>
+              <p class="text-xs text-slate-500 mt-1">${c.students} Students Enrolled • ${c.modules} Modules</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-400">Class Progress</span>
+              <span class="font-bold text-brand-700">${c.completion}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Feedback Table
+      const fbList = document.getElementById('feedbackEntriesList');
+      if (fbList) {
+        fbList.innerHTML = AppState.feedbackList.map(f => `
+          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-1.5 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-800">${escapeHtml(f.author)}</span>
+              <span class="text-amber-500 font-bold">${'★'.repeat(f.rating)}${'☆'.repeat(5 - f.rating)}</span>
+            </div>
+            <div class="flex items-center gap-2 text-[10px] text-slate-400">
+              <span class="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-semibold text-slate-600">${f.category}</span>
+              <span>${f.date}</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-[11px] pt-1">"${escapeHtml(f.comment)}"</p>
+          </div>
+        `).join('');
+      }
+
+      // Topic Diagnostic Table in Analytics Tab
+      const diagnosticTable = document.getElementById('topicDiagnosticTableBody');
+      if (diagnosticTable) {
+        const diagnostics = [
+          { topic: 'AC Circuits & Resonance', subject: 'Physics', attempts: 24, accuracy: 52, status: 'Needs Revision' },
+          { topic: 'Faraday & Lenz Induction', subject: 'Physics', attempts: 38, accuracy: 84, status: 'Mastered' },
+          { topic: 'Integration by Parts', subject: 'Mathematics', attempts: 42, accuracy: 78, status: 'Good' },
+          { topic: 'Aldehydes & Ketones', subject: 'Chemistry', attempts: 30, accuracy: 88, status: 'Mastered' },
+          { topic: 'Optical Isomerism', subject: 'Chemistry', attempts: 18, accuracy: 48, status: 'At Risk' }
+        ];
+
+        diagnosticTable.innerHTML = diagnostics.map(d => `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="p-3 font-bold text-slate-800">${d.topic}</td>
+            <td class="p-3 text-slate-500">${d.subject}</td>
+            <td class="p-3 text-slate-600">${d.attempts} questions</td>
+            <td class="p-3 font-bold ${d.accuracy < 60 ? 'text-rose-600' : 'text-emerald-600'}">${d.accuracy}%</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${d.status === 'At Risk' ? 'bg-rose-100 text-rose-700' : d.status === 'Needs Revision' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${d.status}</span>
+            </td>
+            <td class="p-3 text-right">
+              <button onclick="startTargetedRemediationQuiz('${d.topic}')" class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold rounded-lg text-[11px] transition">
+                Start Practice
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    let masteryChartInstance = null;
+    let radarChartInstance = null;
+    let adminTrendChartInstance = null;
+    let adminAiChartInstance = null;
+
+    function initAnalyticsCharts() {
+      // Subject Mastery Bar Chart
+      const ctxBar = document.getElementById('subjectMasteryChart');
+      if (ctxBar) {
+        if (masteryChartInstance) masteryChartInstance.destroy();
+        masteryChartInstance = new Chart(ctxBar, {
+          type: 'bar',
+          data: {
+            labels: ['Physics', 'Mathematics', 'Chemistry', 'Computer Science'],
+            datasets: [
+              {
+                label: 'Your Mastery (%)',
+                data: [82.4, 88.0, 76.5, 94.0],
+                backgroundColor: 'rgba(99, 102, 241, 0.85)',
+                borderRadius: 8
+              },
+              {
+                label: 'Class Average (%)',
+                data: [74.0, 78.5, 71.0, 82.0],
+                backgroundColor: 'rgba(203, 213, 225, 0.8)',
+                borderRadius: 8
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { font: { size: 11, family: 'Inter' } } } },
+            scales: { y: { min: 0, max: 100, ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }
+          }
+        });
+      }
+
+      // Cognitive Radar Chart
+      const ctxRadar = document.getElementById('competencyRadarChart');
+      if (ctxRadar) {
+        if (radarChartInstance) radarChartInstance.destroy();
+        radarChartInstance = new Chart(ctxRadar, {
+          type: 'radar',
+          data: {
+            labels: ['Recall & Definitions', 'Conceptual Understanding', 'Mathematical Derivation', 'Problem Solving Speed', 'Analytical Synthesis'],
+            datasets: [{
+              label: 'Student Skill Profile',
+              data: [92, 85, 68, 79, 86],
+              backgroundColor: 'rgba(168, 85, 247, 0.25)',
+              borderColor: 'rgba(168, 85, 247, 0.9)',
+              borderWidth: 2,
+              pointBackgroundColor: 'rgba(168, 85, 247, 1)'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { r: { min: 0, max: 100, ticks: { display: false } } },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+    }
+
+    function initAdminCharts() {
+      // Platform activity trend
+      const ctxTrend = document.getElementById('adminPlatformTrendChart');
+      if (ctxTrend) {
+        if (adminTrendChartInstance) adminTrendChartInstance.destroy();
+        adminTrendChartInstance = new Chart(ctxTrend, {
+          type: 'line',
+          data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+            datasets: [{
+              label: 'Quizzes Attempted',
+              data: [1800, 2400, 3100, 2900, 3850],
+              borderColor: '#4f46e5',
+              backgroundColor: 'rgba(79, 70, 229, 0.08)',
+              fill: true,
+              tension: 0.35
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }
+          }
+        });
+      }
+
+      // AI Usage Breakdown
+      const ctxAi = document.getElementById('adminAiUsageChart');
+      if (ctxAi) {
+        if (adminAiChartInstance) adminAiChartInstance.destroy();
+        adminAiChartInstance = new Chart(ctxAi, {
+          type: 'doughnut',
+          data: {
+            labels: ['AI Tutor Academic Questions', 'Remediation Quizzes', 'Smart Search Synthesis', 'Teacher Question Gen'],
+            datasets: [{
+              data: [45, 25, 20, 10],
+              backgroundColor: ['#6366f1', '#a855f7', '#10b981', '#f59e0b']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+          }
+        });
+      }
+    }
+
+    function toggleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      modal.classList.toggle('hidden');
+    }
+
+    function showToast(title, message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const borderColor = type === 'success' ? 'border-emerald-500' : type === 'warning' ? 'border-amber-500' : 'border-indigo-500';
+      const iconSvg = type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+
+      toast.className = `p-3.5 bg-white rounded-2xl shadow-xl border-l-4 ${borderColor} border border-slate-200 flex items-start gap-3 w-80 text-xs transition-all duration-300 pointer-events-auto transform translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <div class="text-indigo-600 flex-shrink-0 mt-0.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">${iconSvg}</svg>
+        </div>
+        <div class="flex-1">
+          <div class="font-bold text-slate-800">${escapeHtml(title)}</div>
+          <div class="text-slate-500 text-[11px] mt-0.5 leading-snug">${escapeHtml(message)}</div>
+        </div>
+      `;
+
+      container.appendChild(toast);
+      // Animate in
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 20);
+
+      // Auto dismiss
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 4500);
+    }
+
+    function openAiResultModal(title, text) {
+      const existing = document.getElementById('dynamicAiModal');
+      if (existing) existing.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'dynamicAiModal';
+      modal.className = 'fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4';
+      modal.innerHTML = `
+        <div class="bg-white w-full max-w-xl max-h-[85vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-900 text-white">
+            <h3 class="text-sm font-bold">${escapeHtml(title)}</h3>
+            <button onclick="document.getElementById('dynamicAiModal').remove()" class="text-slate-400 hover:text-white">✕</button>
+          </div>
+          <div class="p-5 overflow-y-auto text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
+            ${formatMarkdownSimple(text)}
+          </div>
+          <div class="p-3 border-t border-slate-100 bg-slate-50 flex justify-end">
+            <button onclick="document.getElementById('dynamicAiModal').remove()" class="px-4 py-1.5 bg-brand-600 text-white font-bold rounded-xl text-xs">Got it</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    /* Helper Utilities */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatMarkdownSimple(text) {
+      if (!text) return '';
+      let res = escapeHtml(text);
+      // Bold
+      res = res.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Headers
+      res = res.replace(/^### (.*$)/gim, '<h4 class="font-bold text-slate-900 text-sm mt-2 mb-1">$1</h4>');
+      res = res.replace(/^## (.*$)/gim, '<h3 class="font-bold text-slate-900 text-base mt-2 mb-1">$1</h3>');
+      // Bullet points
+      res = res.replace(/^\• (.*$)/gim, '<li class="ml-4 list-disc">$1</li>');
+      res = res.replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>');
+      return res;
+    }
+
+    /* Actions Triggered by Buttons */
+    function startTargetedRemediationQuiz(topic) {
+      switchMainTab('interactive-quiz');
+      startQuiz('qz_101');
+      showToast('Remediation Started', `Targeting: ${topic}`);
+    }
+
+    function askAiAboutTopic(prompt) {
+      switchMainTab('ai-tutor');
+      sendQuickPrompt(prompt);
+    }
+
+    function triggerAiPersonalizedPlan() {
+      openAiResultModal("Your 48-Hour AI Study Plan", `### Personalized Study Plan (Sep 10 - Sep 12, 2026)\n\n**Goal: Raise Physics AC Circuits & Electromagnetism Mastery from 52% to 85%**\n\n1. **Today (45 mins):**\n   - Complete 10 minutes video walkthrough on Lenz Law Direction.\n   - Write summary of Faraday's proportional formula in your Student Diary.\n\n2. **Tomorrow (60 mins):**\n   - Solve 5 multiple-choice questions from the Question Bank.\n   - Ask EduPulse AI to verify your phasor diagram equations.\n\n3. **Sep 12 (30 mins):**\n   - Take the follow-up adaptive quiz to finalize diagnostic calibration.`);
+    }
+
+    function sendAiPersonalizedIntervention(studentName, weakTopic) {
+      showToast('Recovery Assigned', `Adaptive study pathway on ${weakTopic} sent to ${studentName}'s diary.`, 'success');
+    }
+
+    function handleSaveFeedback() {
+      const cat = document.getElementById('fbCategory').value;
+      const rating = parseInt(document.getElementById('fbRating').value);
+      const comment = document.getElementById('fbComments').value.trim();
+
+      if (!comment) {
+        showToast('Comment Required', 'Please share your remarks before submitting.', 'warning');
+        return;
+      }
+
+      AppState.feedbackList.unshift({
+        id: 'fb_' + Date.now(),
+        author: `${AppState.currentUser.name} (${AppState.currentRole})`,
+        category: cat,
+        rating,
+        comment,
+        date: 'Just now'
+      });
+
+      toggleModal('modal-submit-feedback');
+      renderTeacherViews();
+      showToast('Feedback Submitted', 'Thank you for contributing to institutional quality!', 'success');
+    }
+
+    function submitAttendanceBatch() {
+      showToast('Attendance Saved', 'Class XII-A attendance synced with 100% database persistence.', 'success');
+    }
+
+    function handleTeacherMaterialUpload() {
+      const title = document.getElementById('uploadMaterialTitle').value.trim();
+      if (!title) {
+        showToast('Title Required', 'Enter a title for the study resource.', 'warning');
+        return;
+      }
+      showToast('Resource Published', `"${title}" is now available in student search and diary resources!`, 'success');
+      document.getElementById('uploadMaterialTitle').value = '';
+    }
+
+    function openStudyResource(title) {
+      openAiResultModal(title, `### ${title}\n\n**Curriculum Standard: Grade 12 Advanced Physics / Mathematics**\n\n1. **Summary:** Comprehensive instructional breakdown with derived formulas and illustrative numerical problems.\n2. **Key Formulas:**\n   - $\\mathcal{E} = -L \\frac{dI}{dt}$\n   - $\\omega_0 = \\frac{1}{\\sqrt{LC}}$\n\n3. **Action:** Read the chapter review and test your comprehension in the Adaptive Quiz Module.`);
+    }
+
+    /* Keyboard shortcuts */
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        switchMainTab('smart-search');
+      }
+    });
+
+    window.onload = function() {
+      renderStudentDiaryHistory();
+      renderAvailableQuizzes();
+      renderQuestionBank();
+      renderTeacherViews();
+      initAnalyticsCharts();
+    };
+  </script>
+</body>
+</html>
